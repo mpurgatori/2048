@@ -190,10 +190,11 @@
 
       boardDidChange() {
         const self = this
-          self.boardChanged = true
-        },
+        self.boardChanged = true
+      },
 
       registerControl() {
+        const self = this
         document.addEventListener("keydown", function(event) {
           if (event.which === 39) {
             // right
