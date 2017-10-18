@@ -1,7 +1,7 @@
 ((() => {
   const html = `
     <div class="tile">
-      {{ tile.value }}
+      {{ displayingValue }}
     </div>
   `
 
@@ -13,5 +13,15 @@
         required: true
       }
     },
+
+    computed: {
+      displayingValue() {
+        if (this.tile.value > 0) {
+          return this.tile.value
+        }
+
+        return null
+      }
+    }
   })
 }))()
