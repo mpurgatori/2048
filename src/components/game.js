@@ -1,8 +1,8 @@
 ((() => {
   const html = `
     <div class="game">
-      <div v-for="row in board" class="row">
-        <tile v-for="tile in row" :tile="tile"></tile>
+      <div v-for="(row, y) in board" class="row">
+        <tile v-for="(tile, x) in row" :tile="tile" :coords="{x: x, y: y}"></tile>
       </div>
     </div>
   `
@@ -13,10 +13,10 @@
     data () {
       return {
         board: [
-          [{value:0},{value:0},{value:0},{value:0}],
-          [{value:0},{value:0},{value:0},{value:0}],
-          [{value:0},{value:0},{value:0},{value:0}],
-          [{value:0},{value:0},{value:0},{value:0}],
+          [{value:2, oldValue: 2, animations: {merge: [], slide: []}},{value:2, oldValue: 2, animations: {merge: [], slide: []}},{value:2, oldValue: 2, animations: {merge: [], slide: []}},{value:2, oldValue: 2, animations: {merge: [], slide: []}}],
+          [{value:0, oldValue: 0, animations: {merge: [], slide: []}},{value:0, oldValue: 0, animations: {merge: [], slide: []}},{value:0, oldValue: 0, animations: {merge: [], slide: []}},{value:0, oldValue: 0, animations: {merge: [], slide: []}}],
+          [{value:0, oldValue: 0, animations: {merge: [], slide: []}},{value:0, oldValue: 0, animations: {merge: [], slide: []}},{value:0, oldValue: 0, animations: {merge: [], slide: []}},{value:0, oldValue: 0, animations: {merge: [], slide: []}}],
+          [{value:0, oldValue: 0, animations: {merge: [], slide: []}},{value:0, oldValue: 0, animations: {merge: [], slide: []}},{value:0, oldValue: 0, animations: {merge: [], slide: []}},{value:0, oldValue: 0, animations: {merge: [], slide: []}}],
         ],
         boardChanged: false
       }
@@ -24,8 +24,8 @@
 
     mounted() {
       const self = this
-      self.seedTwo()
-      self.seedTwo()
+      // self.seedTwo()
+      // self.seedTwo()
       self.registerControl()
     },
 

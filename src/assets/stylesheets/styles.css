@@ -95,12 +95,20 @@ dark-khaki:
 }
 
 .tile {
+  box-sizing: border-box;
   width: 2em;
   height: 2em;
   display: flex;
-  margin: 0.1em;
+  margin: 10px;
   justify-content: center;
   align-items: center;
   color: #FEFDFB;
   background-color: #91CCC8;
 }
+
+
+.card {
+  transition: .1s all;
+}
+
+
