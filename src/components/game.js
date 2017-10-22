@@ -13,34 +13,49 @@
     data () {
       return {
         board: [
-          [{value:2, oldValue: 2, animations: {merge: [], slide: []}},{value:2, oldValue: 2, animations: {merge: [], slide: []}},{value:2, oldValue: 2, animations: {merge: [], slide: []}},{value:2, oldValue: 2, animations: {merge: [], slide: []}}],
-          [{value:0, oldValue: 0, animations: {merge: [], slide: []}},{value:0, oldValue: 0, animations: {merge: [], slide: []}},{value:0, oldValue: 0, animations: {merge: [], slide: []}},{value:0, oldValue: 0, animations: {merge: [], slide: []}}],
-          [{value:0, oldValue: 0, animations: {merge: [], slide: []}},{value:0, oldValue: 0, animations: {merge: [], slide: []}},{value:0, oldValue: 0, animations: {merge: [], slide: []}},{value:0, oldValue: 0, animations: {merge: [], slide: []}}],
-          [{value:0, oldValue: 0, animations: {merge: [], slide: []}},{value:0, oldValue: 0, animations: {merge: [], slide: []}},{value:0, oldValue: 0, animations: {merge: [], slide: []}},{value:0, oldValue: 0, animations: {merge: [], slide: []}}],
+          [{value:2, isSeed: false, animations: {merge: [], slide: []}},{value:0, isSeed: false, animations: {merge: [], slide: []}},{value:2, isSeed: false, animations: {merge: [], slide: []}},{value:0, isSeed: false, animations: {merge: [], slide: []}}],
+          [{value:0, isSeed: false, animations: {merge: [], slide: []}},{value:0, isSeed: false, animations: {merge: [], slide: []}},{value:0, isSeed: false, animations: {merge: [], slide: []}},{value:0, isSeed: false, animations: {merge: [], slide: []}}],
+          [{value:0, isSeed: false, animations: {merge: [], slide: []}},{value:0, isSeed: false, animations: {merge: [], slide: []}},{value:0, isSeed: false, animations: {merge: [], slide: []}},{value:0, isSeed: false, animations: {merge: [], slide: []}}],
+          [{value:0, isSeed: false, animations: {merge: [], slide: []}},{value:0, isSeed: false, animations: {merge: [], slide: []}},{value:0, isSeed: false, animations: {merge: [], slide: []}},{value:0, isSeed: false, animations: {merge: [], slide: []}}],
         ],
-        boardChanged: false
       }
     },
 
     mounted() {
-      const self = this
-      // self.seedTwo()
-      // self.seedTwo()
-      self.registerControl()
+      this.setupBoard()
+    },
+
+    watch: {
+      animatingEls(els) {
+        if (els.length === 0 && this.animating && this.boardChanged) {
+          this.seedTwo()
+          this.$store.dispatch("toggleAnimation", false)
+          this.$store.dispatch("toggleBoardChanged", false)
+        }
+      }
     },
 
     computed: {
-      stringifyBoard(row) {
-        const self = this
-        return self.board.map(row => {
-          return row.map(item => {
-            return item.value
-          })
-        })
+      animatingEls() {
+        return this.$store.state.animatingEls
       },
+
+      animating() {
+        return this.$store.state.animating
+      },
+
+      boardChanged() {
+        return this.$store.state.boardChanged
+      }
     },
 
     methods: {
+      setupBoard() {
+        // this.seedTwo()
+        // this.seedTwo()
+        this.registerControl()
+      },
+
       seedTwo() {
         const self = this
 
@@ -49,16 +64,15 @@
           return row[Math.floor(Math.random()*row.length)]
         }
 
-        let initialRandomItem = getRandomItem()
+        let randomItem = getRandomItem()
 
-        while (initialRandomItem.value != 0) {
-          initialRandomItem = getRandomItem()
+        while (randomItem.value != 0) {
+          randomItem = getRandomItem()
         }
 
-        initialRandomItem.value = 2
+        randomItem.value = 2
+        randomItem.isSeed = true
       }
     }
-
-
   })
 }))()

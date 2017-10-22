@@ -37,20 +37,18 @@
             }
           }
 
-// this.$bus.$emit('animate')
-
           let k = self.board.length - 2
           let l = self.board.length - 1
           while (k >= 0) {
-            if (board[a][l].value !== 0) { // 
+            if (board[a][l].value !== 0) { // if right most element is 0
               l --
               k --
-            } else if (board[a][l].value !== 0 && board[a][k].value !== 0) {
+            } else if (board[a][l].value !== 0 && board[a][k].value !== 0) { // if right most and left most elements are not 0
               l --
               k --
-            } else if (board[a][l].value === 0 && board[a][k].value === 0) {
+            } else if (board[a][l].value === 0 && board[a][k].value === 0) { // if right most and left most elements are 0
               k --
-            } else if (board[a][l].value === 0 && board[a][k].value !== 0) {
+            } else if (board[a][l].value === 0 && board[a][k].value !== 0) { // if right most element is 0 and left most element is not 0
               board[a][k].animations.slide.push({m: false, x: l, y: a, value: 0})
               board[a][l].animations.slide.push({m: true, x: k, y: a, value: board[a][k].value + board[a][l].value})
 
@@ -62,29 +60,8 @@
             }
           }
 
-this.$bus.$emit('animate')
-
-
-
-
-          
-          // for (var x = 0; x < board.length; x++) {
-          //   for (var y = board.length - 1; y > 0; y--) {
-          //     // merge to the right direction, descending y
-          //     // move all the tiles to the right
-          //     if (board[a][y].value === 0) {
-          //       let temp = board[a][y - 1].value
-          //       board[a][y - 1].value = 0
-          //       board[a][y].value = temp
-          //       if (temp != 0) {
-          //         board[a][y - 1].animations.slide.push({x: y, y: a})
-          //         self.boardDidChange()
-          //       }
-          //     }
-          //   }
-          // }
         }
-
+        this.animate()
       },
 
       moveLeft() {
@@ -99,6 +76,9 @@ this.$bus.$emit('animate')
               j++
               i++
             } else if (board[a][i].value === board[a][j].value) { // if two elements have same value
+              board[a][i].animations.merge.push({m: false, x: j, y: a, value: 0})
+              board[a][j].animations.merge.push({m: true, x: i, y: a, value: board[a][i].value + board[a][j].value})
+
               board[a][j].value = board[a][i].value + board[a][j].value
               board[a][i].value = 0
               self.boardDidChange()
@@ -117,22 +97,31 @@ this.$bus.$emit('animate')
             }
           }
 
-          for (var x = 0; x < board.length; x++) {
-            for (var y = 0; y < board.length - 1; y++) {
-              if (board[a][y].value === 0) {
-                // move to the left direction, ascending y
-                // move all the tiles to the left
-                let temp = board[a][y + 1].value
-                board[a][y + 1].value = 0
-                board[a][y].value = temp
 
-                if (temp != 0) {
-                  self.boardDidChange()
-                }
-              }
+          let k = 1
+          let l = 0
+          while (k < board.length) {
+            if (board[a][l].value !== 0) { // if left most element is 0
+              l ++
+              k ++
+            } else if (board[a][l].value !== 0 && board[a][k].value !== 0) { // if left most and right most elements are not 0
+              l ++
+              k ++
+            } else if (board[a][l].value === 0 && board[a][k].value === 0) { // if left most and right most elements are 0
+              k ++
+            } else if (board[a][l].value === 0 && board[a][k].value !== 0) { // if left most element is 0 and right most element is not 0
+              board[a][k].animations.slide.push({m: false, x: l, y: a, value: 0})
+              board[a][l].animations.slide.push({m: true, x: k, y: a, value: board[a][k].value + board[a][l].value})
+
+              board[a][l].value = board[a][k].value + board[a][l].value
+              board[a][k].value = 0
+              self.boardDidChange()
+              l ++
+              k ++
             }
           }
         }
+        this.animate()
       },
 
       moveDown() {
@@ -225,8 +214,13 @@ this.$bus.$emit('animate')
       },
 
       boardDidChange() {
-        const self = this
-        self.boardChanged = true
+        this.$store.dispatch("toggleBoardChanged", true)
+      },
+
+      animate() {
+        if (this.boardChanged) {
+          this.$store.dispatch("toggleAnimation", true)
+        }
       },
 
       registerControl() {
@@ -246,10 +240,6 @@ this.$bus.$emit('animate')
             self.moveDown()
           } else {
             return // do nothing
-          }
-          if (self.boardChanged) {
-            // self.seedTwo()
-            self.boardChanged = false
           }
         })
       }
