@@ -195,15 +195,15 @@
           let k = self.board.length - 2
           let l = self.board.length - 1
           while (k >= 0) {
-            if (board[l][a].value !== 0) { // if top most element is 0
+            if (board[l][a].value !== 0) { // if bottom most element is 0
               l --
               k --
-            } else if (board[l][a].value !== 0 && board[k][a].value !== 0) { // if top most and bottom most elements are not 0
+            } else if (board[l][a].value !== 0 && board[k][a].value !== 0) { // if bottom most and top most elements are not 0
               l --
               k --
-            } else if (board[l][a].value === 0 && board[k][a].value === 0) { // if left most and right most elements are 0
+            } else if (board[l][a].value === 0 && board[k][a].value === 0) { // if bottom most and top most elements are 0
               k --
-            } else if (board[l][a].value === 0 && board[k][a].value !== 0) { // if left most element is 0 and right most element is not 0
+            } else if (board[l][a].value === 0 && board[k][a].value !== 0) { // if bottom most element is 0 and top most element is not 0
 
               if (!_.isEmpty(board[k][a].animation)) {
                 let animation = board[k][a].animation
@@ -278,9 +278,9 @@
             } else if (board[l][a].value !== 0 && board[k][a].value !== 0) { // if top most and bottom most elements are not 0
               l ++
               k ++
-            } else if (board[l][a].value === 0 && board[k][a].value === 0) { // if left most and right most elements are 0
+            } else if (board[l][a].value === 0 && board[k][a].value === 0) { // if top most and bottom most elements are 0
               k ++
-            } else if (board[l][a].value === 0 && board[k][a].value !== 0) { // if left most element is 0 and right most element is not 0
+            } else if (board[l][a].value === 0 && board[k][a].value !== 0) { // if top most element is 0 and bottom most element is not 0
 
               if (!_.isEmpty(board[k][a].animation)) {
                 let animation = board[k][a].animation
