@@ -16,8 +16,8 @@
               j --
               i --
             } else if (board[a][i].value === board[a][j].value) { // if two elements have same value
-              board[a][i].animations.merge.push({m: false, x: j, y: a, value: 0})
-              board[a][j].animations.merge.push({m: true, x: i, y: a, value: board[a][i].value + board[a][j].value})
+              board[a][i].animation = { x: j, y: a, value: 0}
+              board[a][j].animation = { x: i, y: a, value: board[a][i].value + board[a][j].value}
 
               board[a][j].value = board[a][i].value + board[a][j].value
               board[a][i].value = 0
@@ -49,8 +49,25 @@
             } else if (board[a][l].value === 0 && board[a][k].value === 0) { // if right most and left most elements are 0
               k --
             } else if (board[a][l].value === 0 && board[a][k].value !== 0) { // if right most element is 0 and left most element is not 0
-              board[a][k].animations.slide.push({m: false, x: l, y: a, value: 0})
-              board[a][l].animations.slide.push({m: true, x: k, y: a, value: board[a][k].value + board[a][l].value})
+              
+              if (!_.isEmpty(board[a][k].animation)) {
+                let animation = board[a][k].animation
+                board[animation.y][animation.x].animation = { x: l, y: a, value: 0}
+                board[a][k].animation = { x: l, y: a, value: 0}
+
+                if (!_.isEmpty(board[a][l].animation)) {
+                  board[a][l].animation.value = board[a][k].value + board[a][l].value
+                } else {
+                  board[a][l].animation = { x: k, y: a, value: board[a][k].value + board[a][l].value}
+                }
+
+              } else if (!_.isEmpty(board[a][l].animation)) {
+                board[a][k].animation = { x: l, y: a, value: 0}
+                board[a][l].animation.value = board[a][k].value + board[a][l].value
+              } else {
+                board[a][k].animation = { x: l, y: a, value: 0}
+                board[a][l].animation = { x: k, y: a, value: board[a][k].value + board[a][l].value}
+              }
 
               board[a][l].value = board[a][k].value + board[a][l].value
               board[a][k].value = 0
@@ -61,7 +78,7 @@
           }
 
         }
-        this.animate()
+        this.animate("right")
       },
 
       moveLeft() {
@@ -76,8 +93,8 @@
               j++
               i++
             } else if (board[a][i].value === board[a][j].value) { // if two elements have same value
-              board[a][i].animations.merge.push({m: false, x: j, y: a, value: 0})
-              board[a][j].animations.merge.push({m: true, x: i, y: a, value: board[a][i].value + board[a][j].value})
+              board[a][i].animation = { x: j, y: a, value: 0}
+              board[a][j].animation = { x: i, y: a, value: board[a][i].value + board[a][j].value}
 
               board[a][j].value = board[a][i].value + board[a][j].value
               board[a][i].value = 0
@@ -110,8 +127,20 @@
             } else if (board[a][l].value === 0 && board[a][k].value === 0) { // if left most and right most elements are 0
               k ++
             } else if (board[a][l].value === 0 && board[a][k].value !== 0) { // if left most element is 0 and right most element is not 0
-              board[a][k].animations.slide.push({m: false, x: l, y: a, value: 0})
-              board[a][l].animations.slide.push({m: true, x: k, y: a, value: board[a][k].value + board[a][l].value})
+
+              if (!_.isEmpty(board[a][k].animation)) {
+                let animation = board[a][k].animation
+                board[animation.y][animation.x].animation = { x: l, y: a, value: 0}
+                board[a][k].animation = { x: l, y: a, value: 0}
+                board[a][l].animation = { x: k, y: a, value: board[a][k].value + board[a][l].value}
+              } else if (!_.isEmpty(board[a][l].animation)) {
+                board[a][k].animation = { x: l, y: a, value: 0}
+                board[a][l].animation.value = board[a][k].value + board[a][l].value
+              } else {
+                board[a][k].animation = { x: l, y: a, value: 0}
+                board[a][l].animation = { x: k, y: a, value: board[a][k].value + board[a][l].value}
+              }
+
 
               board[a][l].value = board[a][k].value + board[a][l].value
               board[a][k].value = 0
@@ -121,7 +150,7 @@
             }
           }
         }
-        this.animate()
+        this.animate("left")
       },
 
       moveDown() {
@@ -217,9 +246,10 @@
         this.$store.dispatch("toggleBoardChanged", true)
       },
 
-      animate() {
+      animate(direction) {
         if (this.boardChanged) {
           this.$store.dispatch("toggleAnimation", true)
+          this.$store.dispatch("setAnimationDirection", direction)
         }
       },
 

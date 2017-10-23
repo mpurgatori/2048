@@ -6,6 +6,7 @@
     state: {
       boardChanged: false,
       animating: false,
+      animationDirection: '',
       animatingEls: [],
     },
 
@@ -15,6 +16,9 @@
       },
       removeAnimatingEl(state) {
         state.animatingEls.pop()
+      },
+      setAnimationDirection(state, direction) {
+        state.animationDirection = direction
       },
       toggleAnimation(state, isAnimating) {
         state.animating = isAnimating
@@ -30,6 +34,9 @@
       },
       removeAnimatingEl(context) {
         context.commit("removeAnimatingEl")
+      },
+      setAnimationDirection(context, direction) {
+        context.commit("setAnimationDirection", direction)
       },
       toggleAnimation(context, isAnimating) {
         context.commit("toggleAnimation", isAnimating)

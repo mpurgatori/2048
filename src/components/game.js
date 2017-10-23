@@ -13,10 +13,10 @@
     data () {
       return {
         board: [
-          [{value:2, isSeed: false, animations: {merge: [], slide: []}},{value:0, isSeed: false, animations: {merge: [], slide: []}},{value:2, isSeed: false, animations: {merge: [], slide: []}},{value:0, isSeed: false, animations: {merge: [], slide: []}}],
-          [{value:0, isSeed: false, animations: {merge: [], slide: []}},{value:0, isSeed: false, animations: {merge: [], slide: []}},{value:0, isSeed: false, animations: {merge: [], slide: []}},{value:0, isSeed: false, animations: {merge: [], slide: []}}],
-          [{value:0, isSeed: false, animations: {merge: [], slide: []}},{value:0, isSeed: false, animations: {merge: [], slide: []}},{value:0, isSeed: false, animations: {merge: [], slide: []}},{value:0, isSeed: false, animations: {merge: [], slide: []}}],
-          [{value:0, isSeed: false, animations: {merge: [], slide: []}},{value:0, isSeed: false, animations: {merge: [], slide: []}},{value:0, isSeed: false, animations: {merge: [], slide: []}},{value:0, isSeed: false, animations: {merge: [], slide: []}}],
+          [{value:2, isSeed: false, animation: {}},{value:2, isSeed: false, animation: {}},{value:8, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}}],
+          [{value:0, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}}],
+          [{value:0, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}}],
+          [{value:0, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}}],
         ],
       }
     },

@@ -24,7 +24,6 @@
       return {
         value: 0,
         transitionDelay: 500,
-        transitionType: 'exist-transition',
       }
     },
 
@@ -77,65 +76,30 @@
         }})
       },
 
-      animateMerge(card, resolve) {
-// debugger
-        if (this.tile.animations.merge.some((animation) => {return animation.m})) {
-debugger
-          $(card).velocity({scale: 1.1}, {duration: this.transitionDelay, complete: () => {
-            $(card).velocity({scale: 1}, {duration: this.transitionDelay, complete: () => {
-              resolve()
-            }})
+      animateHorizontal(card, animation, direction) {
+        if (!_.isEmpty(animation)) {
+          this.$store.dispatch("addAnimatingEl")
+          card.style.position = "absolute"
+          let dist = this.endOfRowCheck(direction) ? 0 : (animation.x - this.coords.x) * 132
+          $(card).velocity({marginLeft: dist}, {duration: this.transitionDelay, complete: () => {
+            this.value = animation.value
+            card.removeAttribute("style")
+            // this.clearAnimations()
+            // this.$store.dispatch("removeAnimatingEl")
           }})
-        } else {
-          resolve()
-        }
-      },
-
-      animateSlideHorizontal(card, animations, type, resolve) {
-        if (animations[type].length === 0) {
-          resolve()
-        } else {
-          animations[type].forEach((animation) => {
-            if (!animation.m) {
-              card.style.position = "absolute"
-              let dist = (animation.x - this.coords.x) * 132
-              $(card).velocity({marginLeft: dist}, {duration: this.transitionDelay, complete: () => {
-                this.value = animation.value
-                this.clearAnimationStyle(card)
-                resolve()
-              }})
-            } else {
-              setTimeout(() => {
-                this.value = animation.value
-                resolve()
-              }, this.transitionDelay)
-            }
-          })
         }
       },
 
       animateEl() {
-        this.$store.dispatch("addAnimatingEl")
 
         const card = this.$el.children[0]
-        const animations = this.tile.animations
+        const animation = this.tile.animation
+        const direction = this.animationDirection
 
-        new Promise((resolve) => {
-          this.animateSlideHorizontal(card, animations, "merge", resolve)
-        }).then(() => {
-          this.clearAnimationStyle(card)
-          new Promise((resolve) => {
-            this.animateSlideHorizontal(card, animations, "slide", resolve)
-          }).then(() => {
-            
+        if (direction === "left" || direction === "right") {
+          this.animateHorizontal(card, animation, direction)
+        }
 
-            this.clearAnimationStyle(card)
-            this.clearAnimations()
-
-            this.vale = this.tile.value
-            this.$store.dispatch("removeAnimatingEl")
-          })
-        })
       },
 
       clearAnimationStyle(card) {
@@ -143,8 +107,17 @@ debugger
       },
 
       clearAnimations() {
-        this.tile.animations = {merge: [], slide: []}
+        this.tile.animation = {}
       },
+
+      endOfRowCheck(direction) {
+        let xPos = this.coords.x
+        if (direction === "left") {
+          return xPos === 0
+        } else if (direction === "right") {
+          return xPos === 3
+        }
+      }
     },
 
     computed: {
@@ -170,6 +143,10 @@ debugger
 
       animating() {
         return this.$store.state.animating
+      },
+
+      animationDirection() {
+        return this.$store.state.animationDirection
       },
 
     }
