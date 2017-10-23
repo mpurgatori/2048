@@ -113,10 +113,16 @@ How do we let the app know that we want to trigger this method when a game start
     ...
 
     mounted() {
-      const self = this
-      self.seedTwo()
-      self.seedTwo()
+      this.setupBoard()
     },
+
+    methods: {
+      setupBoard() {
+        this.seedTwo()
+        this.seedTwo()
+      }
+
+    }
   })
 
   ...
