@@ -13,8 +13,8 @@
     data () {
       return {
         board: [
-          [{value:2, isSeed: false, animation: {}},{value:2, isSeed: false, animation: {}},{value:8, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}}],
-          [{value:0, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}}],
+          [{value:2, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}}],
+          [{value:2, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}}],
           [{value:0, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}}],
           [{value:0, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}},{value:0, isSeed: false, animation: {}}],
         ],

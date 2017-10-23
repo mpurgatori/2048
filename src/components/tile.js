@@ -23,7 +23,7 @@
     data() {
       return {
         value: 0,
-        transitionDelay: 500,
+        transitionDelay: 100,
       }
     },
 
@@ -80,12 +80,40 @@
         if (!_.isEmpty(animation)) {
           this.$store.dispatch("addAnimatingEl")
           card.style.position = "absolute"
-          let dist = this.endOfRowCheck(direction) ? 0 : (animation.x - this.coords.x) * 132
+          let dist = this.endOfRowCheck(direction) || animation.m ? 0 : (animation.x - this.coords.x) * 132
           $(card).velocity({marginLeft: dist}, {duration: this.transitionDelay, complete: () => {
             this.value = animation.value
             card.removeAttribute("style")
-            // this.clearAnimations()
-            // this.$store.dispatch("removeAnimatingEl")
+            if (animation.m) {
+              $(card).velocity({scale: 1.1, opacity: 1}, {duration: this.transitionDelay / 2, complete: () => {
+                $(card).velocity({scale: 1}, {duration: this.transitionDelay / 2, complete: () => {
+                  this.clearAnimations()
+                }})
+              }})
+            } else {
+              this.clearAnimations()
+            }
+          }})
+        }
+      },
+
+      animateVertical(card, animation, direction) {
+        if (!_.isEmpty(animation)) {
+          this.$store.dispatch("addAnimatingEl")
+          card.style.position = "absolute"
+          let dist = this.endOfColumnCheck(direction) || animation.m ? 0 : (animation.y - this.coords.y) * 132
+          $(card).velocity({marginTop: dist}, {duration: this.transitionDelay, complete: () => {
+            this.value = animation.value
+            card.removeAttribute("style")
+            if (animation.m) {
+              $(card).velocity({scale: 1.1, opacity: 1}, {duration: this.transitionDelay / 2, complete: () => {
+                $(card).velocity({scale: 1}, {duration: this.transitionDelay / 2, complete: () => {
+                  this.clearAnimations()
+                }})
+              }})
+            } else {
+              this.clearAnimations()
+            }
           }})
         }
       },
@@ -98,6 +126,8 @@
 
         if (direction === "left" || direction === "right") {
           this.animateHorizontal(card, animation, direction)
+        } else if (direction === "up" || direction === "down") {
+          this.animateVertical(card, animation, direction)
         }
 
       },
@@ -107,6 +137,7 @@
       },
 
       clearAnimations() {
+        this.$store.dispatch("removeAnimatingEl")
         this.tile.animation = {}
       },
 
@@ -116,6 +147,15 @@
           return xPos === 0
         } else if (direction === "right") {
           return xPos === 3
+        }
+      },
+
+      endOfColumnCheck(direction) {
+        let yPos = this.coords.y
+        if (direction === "up") {
+          return yPos === 0
+        } else if (direction === "down") {
+          return yPos === 3
         }
       }
     },

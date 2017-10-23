@@ -16,8 +16,8 @@
               j --
               i --
             } else if (board[a][i].value === board[a][j].value) { // if two elements have same value
-              board[a][i].animation = { x: j, y: a, value: 0}
-              board[a][j].animation = { x: i, y: a, value: board[a][i].value + board[a][j].value}
+              board[a][i].animation = {x: j, y: a, value: 0}
+              board[a][j].animation = {m: true, x: i, y: a, value: board[a][i].value + board[a][j].value}
 
               board[a][j].value = board[a][i].value + board[a][j].value
               board[a][i].value = 0
@@ -52,21 +52,21 @@
               
               if (!_.isEmpty(board[a][k].animation)) {
                 let animation = board[a][k].animation
-                board[animation.y][animation.x].animation = { x: l, y: a, value: 0}
-                board[a][k].animation = { x: l, y: a, value: 0}
-
+                board[animation.y][animation.x].animation = {x: l, y: a, value: 0}
+                board[a][k].animation = {x: l, y: a, value: 0}
                 if (!_.isEmpty(board[a][l].animation)) {
                   board[a][l].animation.value = board[a][k].value + board[a][l].value
+                  board[a][l].animation = Object.assign(animation, board[a][l].animation)
                 } else {
-                  board[a][l].animation = { x: k, y: a, value: board[a][k].value + board[a][l].value}
+                  board[a][l].animation = Object.assign(animation, {x: k, y: a, value: board[a][k].value + board[a][l].value})
                 }
 
               } else if (!_.isEmpty(board[a][l].animation)) {
-                board[a][k].animation = { x: l, y: a, value: 0}
+                board[a][k].animation = {x: l, y: a, value: 0}
                 board[a][l].animation.value = board[a][k].value + board[a][l].value
               } else {
-                board[a][k].animation = { x: l, y: a, value: 0}
-                board[a][l].animation = { x: k, y: a, value: board[a][k].value + board[a][l].value}
+                board[a][k].animation = {x: l, y: a, value: 0}
+                board[a][l].animation = {x: k, y: a, value: board[a][k].value + board[a][l].value}
               }
 
               board[a][l].value = board[a][k].value + board[a][l].value
@@ -93,8 +93,8 @@
               j++
               i++
             } else if (board[a][i].value === board[a][j].value) { // if two elements have same value
-              board[a][i].animation = { x: j, y: a, value: 0}
-              board[a][j].animation = { x: i, y: a, value: board[a][i].value + board[a][j].value}
+              board[a][i].animation = {x: j, y: a, value: 0}
+              board[a][j].animation = {m: true, x: i, y: a, value: board[a][i].value + board[a][j].value}
 
               board[a][j].value = board[a][i].value + board[a][j].value
               board[a][i].value = 0
@@ -130,15 +130,21 @@
 
               if (!_.isEmpty(board[a][k].animation)) {
                 let animation = board[a][k].animation
-                board[animation.y][animation.x].animation = { x: l, y: a, value: 0}
-                board[a][k].animation = { x: l, y: a, value: 0}
-                board[a][l].animation = { x: k, y: a, value: board[a][k].value + board[a][l].value}
+                board[animation.y][animation.x].animation = {x: l, y: a, value: 0}
+                board[a][k].animation = {x: l, y: a, value: 0}
+                if (!_.isEmpty(board[a][l].animation)) {
+                  board[a][l].animation.value = board[a][k].value + board[a][l].value
+                  board[a][l].animation = Object.assign(animation, board[a][l].animation)
+                } else {
+                  board[a][l].animation = Object.assign(animation, {x: k, y: a, value: board[a][k].value + board[a][l].value})
+                }
+
               } else if (!_.isEmpty(board[a][l].animation)) {
-                board[a][k].animation = { x: l, y: a, value: 0}
+                board[a][k].animation = {x: l, y: a, value: 0}
                 board[a][l].animation.value = board[a][k].value + board[a][l].value
               } else {
-                board[a][k].animation = { x: l, y: a, value: 0}
-                board[a][l].animation = { x: k, y: a, value: board[a][k].value + board[a][l].value}
+                board[a][k].animation = {x: l, y: a, value: 0}
+                board[a][l].animation = {x: k, y: a, value: board[a][k].value + board[a][l].value}
               }
 
 
@@ -165,6 +171,9 @@
               j--
               i--
             } else if (board[i][a].value === board[j][a].value) {
+              board[i][a].animation = {x: a, y: j, value: 0}
+              board[j][a].animation = {m: true, x: a, y: i, value: board[i][a].value + board[j][a].value}
+
               board[j][a].value = board[i][a].value + board[j][a].value
               board[i][a].value = 0
               self.boardDidChange()
@@ -182,20 +191,49 @@
               i--
             }
           }
-          for (var x = 0; x < board.length; x++) {
-            for (var y = board.length - 1; y > 0; y--) {
-              if (board[y][a].value === 0) {
-                let temp = board[y - 1][a].value
-                board[y - 1][a].value = 0
-                board[y][a].value = temp
 
-                if (temp != 0) {
-                  self.boardDidChange()
+          let k = self.board.length - 2
+          let l = self.board.length - 1
+          while (k >= 0) {
+            if (board[l][a].value !== 0) { // if top most element is 0
+              l --
+              k --
+            } else if (board[l][a].value !== 0 && board[k][a].value !== 0) { // if top most and bottom most elements are not 0
+              l --
+              k --
+            } else if (board[l][a].value === 0 && board[k][a].value === 0) { // if left most and right most elements are 0
+              k --
+            } else if (board[l][a].value === 0 && board[k][a].value !== 0) { // if left most element is 0 and right most element is not 0
+
+              if (!_.isEmpty(board[k][a].animation)) {
+                let animation = board[k][a].animation
+                board[animation.y][animation.x].animation = {x: a, y: l, value: 0}
+                board[k][a].animation = {x: a, y: l, value: 0}
+                if (!_.isEmpty(board[l][a].animation)) {
+                  board[l][a].animation.value = board[k][a].value + board[l][a].value
+                  board[l][a].animation = Object.assign(animation, board[l][a].animation)
+                } else {
+                  board[l][a].animation = Object.assign(animation, {x: a, y: k, value: board[k][a].value + board[l][a].value})
                 }
+
+              } else if (!_.isEmpty(board[l][a].animation)) {
+                board[k][a].animation = {x: a, y: l, value: 0}
+                board[l][a].animation.value = board[k][a].value + board[l][a].value
+              } else {
+                board[k][a].animation = {x: a, y: l, value: 0}
+                board[l][a].animation = {x: a, y: k, value: board[k][a].value + board[l][a].value}
               }
+
+
+              board[l][a].value = board[k][a].value + board[l][a].value
+              board[k][a].value = 0
+              self.boardDidChange()
+              l --
+              k --
             }
           }
         }
+        this.animate("down")
       },
 
       moveUp() {
@@ -210,6 +248,9 @@
               j++
               i++
             } else if (board[i][a].value === board[j][a].value) {
+              board[i][a].animation = {x: a, y: j, value: 0}
+              board[j][a].animation = {m: true, x: a, y: i, value: board[i][a].value + board[j][a].value}
+              
               board[j][a].value = board[i][a].value + board[j][a].value
               board[i][a].value = 0
               self.boardDidChange()
@@ -227,19 +268,49 @@
               i++
             }
           }
-          for (var x = 0; x < board.length; x++) {
-            for (var y = 0; y < board.length - 1; y++) {
-              if (board[y][a].value === 0) {
-                let temp = board[y + 1][a].value
-                board[y + 1][a].value = 0
-                board[y][a].value = temp
-                if (temp != 0) {
-                  self.boardDidChange()
+
+          let k = 1
+          let l = 0
+          while (k < board.length) {
+            if (board[l][a].value !== 0) { // if top most element is 0
+              l ++
+              k ++
+            } else if (board[l][a].value !== 0 && board[k][a].value !== 0) { // if top most and bottom most elements are not 0
+              l ++
+              k ++
+            } else if (board[l][a].value === 0 && board[k][a].value === 0) { // if left most and right most elements are 0
+              k ++
+            } else if (board[l][a].value === 0 && board[k][a].value !== 0) { // if left most element is 0 and right most element is not 0
+
+              if (!_.isEmpty(board[k][a].animation)) {
+                let animation = board[k][a].animation
+                board[animation.y][animation.x].animation = {x: a, y: l, value: 0}
+                board[k][a].animation = {x: a, y: l, value: 0}
+                if (!_.isEmpty(board[l][a].animation)) {
+                  board[l][a].animation.value = board[k][a].value + board[l][a].value
+                  board[l][a].animation = Object.assign(animation, board[l][a].animation)
+                } else {
+                  board[l][a].animation = Object.assign(animation, {x: a, y: k, value: board[k][a].value + board[l][a].value})
                 }
+
+              } else if (!_.isEmpty(board[l][a].animation)) {
+                board[k][a].animation = {x: a, y: l, value: 0}
+                board[l][a].animation.value = board[k][a].value + board[l][a].value
+              } else {
+                board[k][a].animation = {x: a, y: l, value: 0}
+                board[l][a].animation = {x: a, y: k, value: board[k][a].value + board[l][a].value}
               }
+
+
+              board[l][a].value = board[k][a].value + board[l][a].value
+              board[k][a].value = 0
+              self.boardDidChange()
+              l ++
+              k ++
             }
           }
         }
+        this.animate("up")
       },
 
       boardDidChange() {
