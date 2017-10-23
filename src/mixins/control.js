@@ -250,7 +250,7 @@
             } else if (board[i][a].value === board[j][a].value) {
               board[i][a].animation = {x: a, y: j, value: 0}
               board[j][a].animation = {m: true, x: a, y: i, value: board[i][a].value + board[j][a].value}
-              
+
               board[j][a].value = board[i][a].value + board[j][a].value
               board[i][a].value = 0
               self.boardDidChange()

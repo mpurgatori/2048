@@ -23,34 +23,25 @@
     data() {
       return {
         value: 0,
-        transitionDelay: 100,
+        transitionDelay: 500,
       }
     },
 
-    // --------------------------------
-    // BUSSTER --- FOR TESTING PURPOSES
     mounted() {
       this.value = this.tile.value
     },
-    // --------------------------------
 
     watch: {
-      // value(newVal, oldVal) {
-      //   if (newVal > oldVal && newVal !== 0 && oldVal !== 0) {
-      //     const card = this.$el.children[0]
-      //     $(card).velocity({scale: 1.1, opacity: 1}, {duration: this.transitionDelay / 2, complete: () => {
-      //       $(card).velocity({scale: 1}, {duration: this.transitionDelay / 2})
-      //     }})
-      //   }
-      // },
-
-      seedValue(s) {
-        if (s) {
-          new Promise((resolve) => {
-            this.animateScaleIn(this.propValue, resolve)
-          }).then(() => {
-            this.tile.isSeed = false
-          })
+      seedValue(val) {
+        if (val > 0) {
+          const card = this.$el.children[0]
+          this.value = val
+          card.style.opacity = 0
+          $(card).velocity({scale: 1.1, opacity: 1}, {duration: this.transitionDelay / 2, complete: () => {
+            $(card).velocity({scale: 1}, {duration: this.transitionDelay / 2, complete: () => {
+              this.$emit("reset-seed-value", this.coords)
+            }})
+          }})
         }
       },
 
@@ -63,58 +54,42 @@
 
     methods: {
 
-      animateScaleIn(newValue, resolve) {
-        const card = this.$el.children[0]
-        card.style.opacity = 0
-
-        this.value = newValue
-
-        $(card).velocity({scale: 1.1, opacity: 1}, {duration: this.transitionDelay / 2, complete: () => {
-          $(card).velocity({scale: 1}, {duration: this.transitionDelay / 2, complete: () => {
-            resolve()
+      animateScale(card, opacity) {
+        card.style.opacity = opacity
+        return new Promise((resolve) => {
+          $(card).velocity({scale: 1.1, opacity: 1}, {duration: this.transitionDelay / 2, complete: () => {
+            $(card).velocity({scale: 1}, {duration: this.transitionDelay / 2, complete: () => {
+              resolve()
+            }})
           }})
-        }})
+        })
       },
 
       animateHorizontal(card, animation, direction) {
-        if (!_.isEmpty(animation)) {
-          this.$store.dispatch("addAnimatingEl")
-          card.style.position = "absolute"
-          let dist = this.endOfRowCheck(direction) || animation.m ? 0 : (animation.x - this.coords.x) * 132
-          $(card).velocity({marginLeft: dist}, {duration: this.transitionDelay, complete: () => {
-            this.value = animation.value
-            card.removeAttribute("style")
-            if (animation.m) {
-              $(card).velocity({scale: 1.1, opacity: 1}, {duration: this.transitionDelay / 2, complete: () => {
-                $(card).velocity({scale: 1}, {duration: this.transitionDelay / 2, complete: () => {
-                  this.clearAnimations()
-                }})
-              }})
-            } else {
-              this.clearAnimations()
-            }
-          }})
-        }
+        let dist = this.endOfRowCheck(direction) || animation.m ? 0 : (animation.x - this.coords.x) * 132
+        $(card).velocity({marginLeft: dist}, {duration: this.transitionDelay, complete: () => {
+          this.animateState(card, animation)
+        }})
       },
 
       animateVertical(card, animation, direction) {
-        if (!_.isEmpty(animation)) {
-          this.$store.dispatch("addAnimatingEl")
-          card.style.position = "absolute"
-          let dist = this.endOfColumnCheck(direction) || animation.m ? 0 : (animation.y - this.coords.y) * 132
-          $(card).velocity({marginTop: dist}, {duration: this.transitionDelay, complete: () => {
-            this.value = animation.value
-            card.removeAttribute("style")
-            if (animation.m) {
-              $(card).velocity({scale: 1.1, opacity: 1}, {duration: this.transitionDelay / 2, complete: () => {
-                $(card).velocity({scale: 1}, {duration: this.transitionDelay / 2, complete: () => {
-                  this.clearAnimations()
-                }})
-              }})
-            } else {
-              this.clearAnimations()
-            }
+        let dist = this.endOfColumnCheck(direction) || animation.m ? 0 : (animation.y - this.coords.y) * 132
+        $(card).velocity({marginTop: dist}, {duration: this.transitionDelay, complete: () => {
+          this.animateState(card, animation)
+        }})
+      },
+
+      animateState(card, animation) {
+        this.value = animation.value
+        card.removeAttribute("style")
+        if (animation.m) {
+          $(card).velocity({scale: 1.1, opacity: 1}, {duration: this.transitionDelay / 2, complete: () => {
+            $(card).velocity({scale: 1}, {duration: this.transitionDelay / 2, complete: () => {
+              this.clearAnimation()
+            }})
           }})
+        } else {
+          this.clearAnimation()
         }
       },
 
@@ -124,10 +99,16 @@
         const animation = this.tile.animation
         const direction = this.animationDirection
 
-        if (direction === "left" || direction === "right") {
-          this.animateHorizontal(card, animation, direction)
-        } else if (direction === "up" || direction === "down") {
-          this.animateVertical(card, animation, direction)
+        if (!_.isEmpty(animation)) {
+          this.$store.dispatch("addAnimatingEl")
+
+          card.style.position = "absolute"
+
+          if (direction === "left" || direction === "right") {
+            this.animateHorizontal(card, animation, direction)
+          } else if (direction === "up" || direction === "down") {
+            this.animateVertical(card, animation, direction)
+          }
         }
 
       },
@@ -136,7 +117,7 @@
         card.removeAttribute("style")
       },
 
-      clearAnimations() {
+      clearAnimation() {
         this.$store.dispatch("removeAnimatingEl")
         this.tile.animation = {}
       },
@@ -174,11 +155,7 @@
       },
 
       seedValue() {
-        return this.tile.isSeed
-      },
-
-      propValue() {
-        return this.tile.value
+        return this.tile.seedValue
       },
 
       animating() {
