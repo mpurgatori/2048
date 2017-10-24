@@ -1,8 +1,14 @@
 ((() => {
   const html = `
     <div class="game">
-      <div v-for="(row, y) in board" :key="y" class="row">
-        <tile v-for="(tile, x) in row" :key="x" :tile="tile" :coords="{x: x, y: y}" @reset-seed-value="resetSeedValue"></tile>
+      <game-menu @new-game="newGame()"></game-menu>
+      <div class="game-container">
+        <transition-group name="tile" tag="div" class="board">
+          <tile v-for="tile in board" :tile="tile" :key="tile.id"></tile>
+        </transition-group>
+        <div class="board shadow-board">
+          <div v-for="n in board.length" :key="n" class="tile shadow-tile"></div>
+        </div>
       </div>
     </div>
   `
@@ -12,12 +18,9 @@
     mixins: [window.app.mixins.control],
     data () {
       return {
-        board: [
-          [{value:2, seedValue: 0, animation: {}},{value:2, seedValue: 0, animation: {}},{value:0, seedValue: 0, animation: {}},{value:0, seedValue: 0, animation: {}}],
-          [{value:0, seedValue: 0, animation: {}},{value:0, seedValue: 0, animation: {}},{value:0, seedValue: 0, animation: {}},{value:0, seedValue: 0, animation: {}}],
-          [{value:0, seedValue: 0, animation: {}},{value:0, seedValue: 0, animation: {}},{value:0, seedValue: 0, animation: {}},{value:0, seedValue: 0, animation: {}}],
-          [{value:0, seedValue: 0, animation: {}},{value:0, seedValue: 0, animation: {}},{value:0, seedValue: 0, animation: {}},{value:0, seedValue: 0, animation: {}}],
-        ],
+        board: [],
+        mergeAnimationsList: [],
+        slideAnimationsList: []
       }
     },
 
@@ -25,74 +28,44 @@
       this.setupBoard()
     },
 
-    watch: {
-      animatingEls(els) {
-        if (els.length === 0 && this.animating && this.boardChanged) {
-          console.log("seed two")
-          // this.seedTwo()
-
-          console.log("seed two complete")
-
-          this.$store.dispatch("toggleAnimation", false)
-          this.$store.dispatch("toggleBoardChanged", false)
-
-          this.seedTwo()
-        }
-      },
-    },
-
-    computed: {
-      animatingEls() {
-        return this.$store.state.animatingEls
-      },
-
-      animating() {
-        return this.$store.state.animating
-      },
-
-      boardChanged() {
-        return this.$store.state.boardChanged
-      }
-    },
-
     methods: {
+
       setupBoard() {
-        // this.seedTwo()
-        // this.seedTwo()
+        this.newGame()
         this.registerControl()
       },
 
       seedTwo() {
-        let getRandomCoords = () => {
-          let randomRowIndex = Math.floor(Math.random() * this.board.length)
-          let row = this.board[randomRowIndex]
-          let randomColumnIndex = Math.floor(Math.random()*row.length)
-          // let item = row[Math.floor(Math.random()*row.length)]
+        let getRandomItem = () => {
+          let randomIndex = Math.floor(Math.random() * this.board.length)
 
-
-          let coords = {x: randomColumnIndex, y: randomRowIndex}
-
-          console.log("row: "+ randomRowIndex)
-          console.log("column: " + randomColumnIndex)
-          // return item
-          return coords
+          return this.board[randomIndex]
         }
 
-        let randomCoords = getRandomCoords()
+        let randomItem = getRandomItem()
 
-        while (this.board[randomCoords.y][randomCoords.x].value != 0) {
-          randomCoords = getRandomCoords()
+        while (randomItem.value != 0) {
+          randomItem = getRandomItem()
         }
         
 
-        // randomItem.value = 2
-        // randomItem.seedValue = 2
-
-        this.$store.dispatch("addSeedCoord", randomCoords)
+        randomItem.value = 2
       },
 
-      resetSeedValue(tileCoords) {
-        this.board[tileCoords.x][tileCoords.y].seedValue = 0
+      newGame() {
+        this.resetBoard()
+        this.seedTwo()
+        this.seedTwo()
+      },
+
+      resetBoard() {
+        this.board = Array.apply(null, { length: 16 })
+          .map(function (_, index) { 
+            return {
+              id: index,
+              value: 0
+            }
+          })
       }
     }
   })
