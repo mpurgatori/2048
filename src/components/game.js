@@ -1,8 +1,14 @@
 ((() => {
   const html = `
     <div class="game">
-      <div v-for="row in board" class="row">
-        <tile v-for="tile in row" :tile="tile"></tile>
+      <game-menu @new-game="newGame()"></game-menu>
+      <div class="game-container">
+        <transition-group name="tile" tag="div" class="board">
+          <tile v-for="tile in board" :tile="tile" :key="tile.id"></tile>
+        </transition-group>
+        <div class="board shadow-board">
+          <div v-for="n in board.length" :key="n" class="tile shadow-tile"></div>
+        </div>
       </div>
     </div>
   `
@@ -12,53 +18,55 @@
     mixins: [window.app.mixins.control],
     data () {
       return {
-        board: [
-          [{value:0},{value:0},{value:0},{value:0}],
-          [{value:0},{value:0},{value:0},{value:0}],
-          [{value:0},{value:0},{value:0},{value:0}],
-          [{value:0},{value:0},{value:0},{value:0}],
-        ],
-        boardChanged: false
+        board: [],
+        mergeAnimationsList: [],
+        slideAnimationsList: []
       }
     },
 
     mounted() {
-      const self = this
-      self.seedTwo()
-      self.seedTwo()
-      self.registerControl()
-    },
-
-    computed: {
-      stringifyBoard(row) {
-        const self = this
-        return self.board.map(row => {
-          return row.map(item => {
-            return item.value
-          })
-        })
-      },
+      this.setupBoard()
     },
 
     methods: {
+
+      setupBoard() {
+        this.newGame()
+        this.registerControl()
+      },
+
       seedTwo() {
-        const self = this
+        let getRandomItem = () => {
+          let randomIndex = Math.floor(Math.random() * this.board.length)
 
-        let getRandomItem = function() {
-          let row = self.board[Math.floor(Math.random()*self.board.length)]
-          return row[Math.floor(Math.random()*row.length)]
+          return this.board[randomIndex]
         }
 
-        let initialRandomItem = getRandomItem()
+        let randomItem = getRandomItem()
 
-        while (initialRandomItem.value != 0) {
-          initialRandomItem = getRandomItem()
+        while (randomItem.value != 0) {
+          randomItem = getRandomItem()
         }
+        
 
-        initialRandomItem.value = 2
+        randomItem.value = 2
+      },
+
+      newGame() {
+        this.resetBoard()
+        this.seedTwo()
+        this.seedTwo()
+      },
+
+      resetBoard() {
+        this.board = Array.apply(null, { length: 16 })
+          .map(function (_, index) { 
+            return {
+              id: index,
+              value: 0
+            }
+          })
       }
     }
-
-
   })
 }))()
