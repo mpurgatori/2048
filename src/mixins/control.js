@@ -81,6 +81,8 @@
         this.animate("right")
       },
 
+
+
       moveLeft() {
         const self = this
         let board = self.board

@@ -8,9 +8,18 @@
       animating: false,
       animationDirection: '',
       animatingEls: [],
+      seedCoords:[],
+      seedValue: 2,
     },
 
     mutations: {
+      addSeedCoord(state, coord) {
+        state.seedCoords.push(coord)
+      },
+      removeSeedCoord(state, coord) {
+        let index = _.findIndex(state.seedCoords, function(c) { return _.isEqual(c, coord) })
+        state.seedCoords.splice(index, 1)
+      },
       addAnimatingEl(state) {
         state.animatingEls.push({})
       },
@@ -29,6 +38,12 @@
     },
 
     actions: {
+      addSeedCoord(context, coord) {
+        context.commit("addSeedCoord", coord)
+      },
+      removeSeedCoord(context, coord) {
+        context.commit("removeSeedCoord", coord)
+      },
       addAnimatingEl(context) {
         context.commit("addAnimatingEl")
       },

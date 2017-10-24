@@ -13,7 +13,7 @@
     data () {
       return {
         board: [
-          [{value:0, seedValue: 0, animation: {}},{value:0, seedValue: 0, animation: {}},{value:0, seedValue: 0, animation: {}},{value:0, seedValue: 0, animation: {}}],
+          [{value:2, seedValue: 0, animation: {}},{value:2, seedValue: 0, animation: {}},{value:0, seedValue: 0, animation: {}},{value:0, seedValue: 0, animation: {}}],
           [{value:0, seedValue: 0, animation: {}},{value:0, seedValue: 0, animation: {}},{value:0, seedValue: 0, animation: {}},{value:0, seedValue: 0, animation: {}}],
           [{value:0, seedValue: 0, animation: {}},{value:0, seedValue: 0, animation: {}},{value:0, seedValue: 0, animation: {}},{value:0, seedValue: 0, animation: {}}],
           [{value:0, seedValue: 0, animation: {}},{value:0, seedValue: 0, animation: {}},{value:0, seedValue: 0, animation: {}},{value:0, seedValue: 0, animation: {}}],
@@ -28,11 +28,17 @@
     watch: {
       animatingEls(els) {
         if (els.length === 0 && this.animating && this.boardChanged) {
-          this.seedTwo()
+          console.log("seed two")
+          // this.seedTwo()
+
+          console.log("seed two complete")
+
           this.$store.dispatch("toggleAnimation", false)
           this.$store.dispatch("toggleBoardChanged", false)
+
+          this.seedTwo()
         }
-      }
+      },
     },
 
     computed: {
@@ -51,28 +57,38 @@
 
     methods: {
       setupBoard() {
-        this.seedTwo()
-        this.seedTwo()
+        // this.seedTwo()
+        // this.seedTwo()
         this.registerControl()
       },
 
       seedTwo() {
-        let getRandomItem = () => {
+        let getRandomCoords = () => {
           let randomRowIndex = Math.floor(Math.random() * this.board.length)
           let row = this.board[randomRowIndex]
           let randomColumnIndex = Math.floor(Math.random()*row.length)
-          let item = row[Math.floor(Math.random()*row.length)]
-          return item
+          // let item = row[Math.floor(Math.random()*row.length)]
+
+
+          let coords = {x: randomColumnIndex, y: randomRowIndex}
+
+          console.log("row: "+ randomRowIndex)
+          console.log("column: " + randomColumnIndex)
+          // return item
+          return coords
         }
 
-        let randomItem = getRandomItem()
+        let randomCoords = getRandomCoords()
 
-        while (randomItem.value != 0) {
-          randomItem = getRandomItem()
+        while (this.board[randomCoords.y][randomCoords.x].value != 0) {
+          randomCoords = getRandomCoords()
         }
         
-        randomItem.value = 2
-        randomItem.seedValue = 2
+
+        // randomItem.value = 2
+        // randomItem.seedValue = 2
+
+        this.$store.dispatch("addSeedCoord", randomCoords)
       },
 
       resetSeedValue(tileCoords) {

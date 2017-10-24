@@ -23,7 +23,7 @@
     data() {
       return {
         value: 0,
-        transitionDelay: 500,
+        transitionDelay: 100,
       }
     },
 
@@ -32,8 +32,12 @@
     },
 
     watch: {
+      // try event bus
+      // try passing coords to seed two
+      // seed two puts seed coords in the store, and tile watches for that to determine if it needs to seed itself
       seedValue(val) {
         if (val > 0) {
+          console.log("seed value has changed: " + val)
           const card = this.$el.children[0]
           this.value = val
           card.style.opacity = 0
@@ -42,6 +46,21 @@
               this.$emit("reset-seed-value", this.coords)
             }})
           }})
+        }
+      },
+
+      seedCoords(newCoords) {
+        if (newCoords.filter((coord) => {return _.isEqual(this.coords, coord)}).length > 0) {
+          // TODO: SEED VALUE
+
+          // const card = this.$el.children[0]
+          // this.value = val
+          // card.style.opacity = 0
+          // $(card).velocity({scale: 1.1, opacity: 1}, {duration: this.transitionDelay / 2, complete: () => {
+          //   $(card).velocity({scale: 1}, {duration: this.transitionDelay / 2, complete: () => {
+          //     this.$emit("reset-seed-value", this.coords)
+          //   }})
+          // }})
         }
       },
 
@@ -155,7 +174,12 @@
       },
 
       seedValue() {
+        console.log("seed value from tile")
         return this.tile.seedValue
+      },
+
+      seedCoords() {
+        return this.$store.state.seedCoords
       },
 
       animating() {
