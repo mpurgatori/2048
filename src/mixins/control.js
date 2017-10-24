@@ -21,18 +21,18 @@
 
       },
       animateTiles(animation) {
-        let { moveTo, merge } = animation
+        let { to, from } = animation
 
-        let a = this.board[moveTo]
-        let b = this.board[merge]
+        let a = this.board[to]
+        let b = this.board[from]
         a.value = a.value + b.value
         b.value = 0
 
-        this.board.splice(moveTo, 1)
-        this.board.splice(moveTo, 0, b)
+        this.board.splice(to, 1)
+        this.board.splice(to, 0, b)
         
-        this.board.splice(merge, 1)
-        this.board.splice(merge, 0, a)
+        this.board.splice(from, 1)
+        this.board.splice(from, 0, a)
       },
 
       moveRight() {
@@ -57,7 +57,7 @@
             i --
           } else if (board[a][i].value === board[a][j].value) { // if two elements have same value
 
-            this.mergeAnimationsList.push({moveTo: (a * 4 + i), merge: (a * 4 + j)})
+            this.mergeAnimationsList.push({to: (a * 4 + i), from: (a * 4 + j)})
 
             board[a][j].value = board[a][i].value + board[a][j].value
             board[a][i].value = 0
@@ -91,7 +91,7 @@
             k --
           } else if (board[a][l].value === 0 && board[a][k].value !== 0) { // if right most element is 0 and left most element is not 0
 
-            this.slideAnimationsList.push({moveTo: (a * 4 + k), merge: (a * 4 + l)})
+            this.slideAnimationsList.push({to: (a * 4 + k), from: (a * 4 + l)})
 
             board[a][l].value = board[a][k].value + board[a][l].value
             board[a][k].value = 0
@@ -120,7 +120,7 @@
             i++
           } else if (board[a][i].value === board[a][j].value) { // if two elements have same value
 
-            this.mergeAnimationsList.push({moveTo: (a * 4 + i), merge: (a * 4 + j)})
+            this.mergeAnimationsList.push({to: (a * 4 + i), from: (a * 4 + j)})
 
             board[a][j].value = board[a][i].value + board[a][j].value
             board[a][i].value = 0
@@ -154,7 +154,7 @@
             k ++
           } else if (board[a][l].value === 0 && board[a][k].value !== 0) { // if left most element is 0 and right most element is not 0
 
-            this.slideAnimationsList.push({moveTo: (a * 4 + k), merge: (a * 4 + l)})
+            this.slideAnimationsList.push({to: (a * 4 + k), from: (a * 4 + l)})
 
             board[a][l].value = board[a][k].value + board[a][l].value
             board[a][k].value = 0
@@ -183,7 +183,7 @@
             i--
           } else if (board[i][a].value === board[j][a].value) {
 
-            this.mergeAnimationsList.push({moveTo: (i * 4 + a), merge: (j * 4 + a)})
+            this.mergeAnimationsList.push({to: (i * 4 + a), from: (j * 4 + a)})
 
             board[j][a].value = board[i][a].value + board[j][a].value
             board[i][a].value = 0
@@ -217,7 +217,7 @@
             k --
           } else if (board[l][a].value === 0 && board[k][a].value !== 0) { // if bottom most element is 0 and top most element is not 0
 
-            this.slideAnimationsList.push({moveTo: (k * 4 + a), merge: (l * 4 + a)})
+            this.slideAnimationsList.push({to: (k * 4 + a), from: (l * 4 + a)})
 
             board[l][a].value = board[k][a].value + board[l][a].value
             board[k][a].value = 0
@@ -245,7 +245,7 @@
             i++
           } else if (board[i][a].value === board[j][a].value) {
 
-            this.mergeAnimationsList.push({moveTo: (i * 4 + a), merge: (j * 4 + a)}) // add animation data
+            this.mergeAnimationsList.push({to: (i * 4 + a), from: (j * 4 + a)}) // add animation data
 
             board[j][a].value = board[i][a].value + board[j][a].value
             board[i][a].value = 0
@@ -279,7 +279,7 @@
             k ++
           } else if (board[l][a].value === 0 && board[k][a].value !== 0) { // if top most element is 0 and bottom most element is not 0
 
-            this.slideAnimationsList.push({moveTo: (k * 4 + a), merge: (l * 4 + a)}) // add animation data
+            this.slideAnimationsList.push({to: (k * 4 + a), from: (l * 4 + a)}) // add animation data
 
             board[l][a].value = board[k][a].value + board[l][a].value
             board[k][a].value = 0
