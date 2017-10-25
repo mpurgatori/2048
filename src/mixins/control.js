@@ -21,18 +21,18 @@
 
       },
       animateTiles(animation) {
-        let { to, from } = animation
+        let { from, to } = animation
 
-        let a = this.board[to]
-        let b = this.board[from]
+        let a = this.board[from]
+        let b = this.board[to]
         a.value = a.value + b.value
         b.value = 0
 
-        this.board.splice(to, 1)
-        this.board.splice(to, 0, b)
-        
         this.board.splice(from, 1)
-        this.board.splice(from, 0, a)
+        this.board.splice(from, 0, b)
+        
+        this.board.splice(to, 1)
+        this.board.splice(to, 0, a)
       },
 
       moveRight() {
@@ -50,14 +50,14 @@
 
         // updated all the possible merge values
         // think of i, j  pointers in the board
-        // if they become separate, the pointers will try to catch up
+        // if they become separate, the pointers will try from catch up
         while (i >= 0) {
           if (board[a][i].value === 0 && board[a][j].value === 0) { // if both elements are zero
             j --
             i --
           } else if (board[a][i].value === board[a][j].value) { // if two elements have same value
 
-            this.mergeAnimationsList.push({to: (a * 4 + i), from: (a * 4 + j)})
+            this.mergeAnimationsList.push({from: (a * 4 + i), to: (a * 4 + j)})
 
             board[a][j].value = board[a][i].value + board[a][j].value
             board[a][i].value = 0
@@ -66,10 +66,10 @@
           } else if (board[a][j].value === 0) { // if the right most has 0
             j--
             i--
-          } else if (board[a][i].value != 0 && board[a][j].value != 0 && (i + 1 == j)) { // if both are non zero and next to each other
+          } else if (board[a][i].value != 0 && board[a][j].value != 0 && (i + 1 == j)) { // if both are non zero and next from each other
             j--
             i--
-          } else if (board[a][i].value != 0 && board[a][j].value != 0) { // if both are non zero and not next to each other
+          } else if (board[a][i].value != 0 && board[a][j].value != 0) { // if both are non zero and not next from each other
             j--
           } else if (board[a][i].value === 0) { // if the left most element is zero
             i--
@@ -91,7 +91,7 @@
             k --
           } else if (board[a][l].value === 0 && board[a][k].value !== 0) { // if right most element is 0 and left most element is not 0
 
-            this.slideAnimationsList.push({to: (a * 4 + k), from: (a * 4 + l)})
+            this.slideAnimationsList.push({from: (a * 4 + k), to: (a * 4 + l)})
 
             board[a][l].value = board[a][k].value + board[a][l].value
             board[a][k].value = 0
@@ -120,7 +120,7 @@
             i++
           } else if (board[a][i].value === board[a][j].value) { // if two elements have same value
 
-            this.mergeAnimationsList.push({to: (a * 4 + i), from: (a * 4 + j)})
+            this.mergeAnimationsList.push({from: (a * 4 + i), to: (a * 4 + j)})
 
             board[a][j].value = board[a][i].value + board[a][j].value
             board[a][i].value = 0
@@ -129,10 +129,10 @@
           } else if (board[a][j].value === 0) { // if the left most ele has 0
             j++
             i++
-          } else if (board[a][i].value != 0 && board[a][j].value != 0 && (i - 1 == j)) { // if both are non zero and next to each other
+          } else if (board[a][i].value != 0 && board[a][j].value != 0 && (i - 1 == j)) { // if both are non zero and next from each other
             j++
             i++
-          } else if (board[a][i].value != 0 && board[a][j].value != 0) { // if both are non zero and not next to each other
+          } else if (board[a][i].value != 0 && board[a][j].value != 0) { // if both are non zero and not next from each other
             j++
           } else if (board[a][i].value === 0) { // if the right most ele has 0
             i++
@@ -154,7 +154,7 @@
             k ++
           } else if (board[a][l].value === 0 && board[a][k].value !== 0) { // if left most element is 0 and right most element is not 0
 
-            this.slideAnimationsList.push({to: (a * 4 + k), from: (a * 4 + l)})
+            this.slideAnimationsList.push({from: (a * 4 + k), to: (a * 4 + l)})
 
             board[a][l].value = board[a][k].value + board[a][l].value
             board[a][k].value = 0
@@ -183,7 +183,7 @@
             i--
           } else if (board[i][a].value === board[j][a].value) {
 
-            this.mergeAnimationsList.push({to: (i * 4 + a), from: (j * 4 + a)})
+            this.mergeAnimationsList.push({from: (i * 4 + a), to: (j * 4 + a)})
 
             board[j][a].value = board[i][a].value + board[j][a].value
             board[i][a].value = 0
@@ -207,17 +207,17 @@
         let k = board.length - 2
         let l = board.length - 1
         while (k >= 0) {
-          if (board[l][a].value !== 0) { // if bottom most element is 0
+          if (board[l][a].value !== 0) { // if botfromm most element is 0
             l --
             k --
-          } else if (board[l][a].value !== 0 && board[k][a].value !== 0) { // if bottom most and top most elements are not 0
+          } else if (board[l][a].value !== 0 && board[k][a].value !== 0) { // if botfromm most and fromp most elements are not 0
             l --
             k --
-          } else if (board[l][a].value === 0 && board[k][a].value === 0) { // if bottom most and top most elements are 0
+          } else if (board[l][a].value === 0 && board[k][a].value === 0) { // if botfromm most and fromp most elements are 0
             k --
-          } else if (board[l][a].value === 0 && board[k][a].value !== 0) { // if bottom most element is 0 and top most element is not 0
+          } else if (board[l][a].value === 0 && board[k][a].value !== 0) { // if botfromm most element is 0 and fromp most element is not 0
 
-            this.slideAnimationsList.push({to: (k * 4 + a), from: (l * 4 + a)})
+            this.slideAnimationsList.push({from: (k * 4 + a), to: (l * 4 + a)})
 
             board[l][a].value = board[k][a].value + board[l][a].value
             board[k][a].value = 0
@@ -245,7 +245,7 @@
             i++
           } else if (board[i][a].value === board[j][a].value) {
 
-            this.mergeAnimationsList.push({to: (i * 4 + a), from: (j * 4 + a)}) // add animation data
+            this.mergeAnimationsList.push({from: (i * 4 + a), to: (j * 4 + a)}) // add animation data
 
             board[j][a].value = board[i][a].value + board[j][a].value
             board[i][a].value = 0
@@ -269,17 +269,17 @@
         let k = 1
         let l = 0
         while (k < board.length) {
-          if (board[l][a].value !== 0) { // if top most element is 0
+          if (board[l][a].value !== 0) { // if fromp most element is 0
             l ++
             k ++
-          } else if (board[l][a].value !== 0 && board[k][a].value !== 0) { // if top most and bottom most elements are not 0
+          } else if (board[l][a].value !== 0 && board[k][a].value !== 0) { // if fromp most and botfromm most elements are not 0
             l ++
             k ++
-          } else if (board[l][a].value === 0 && board[k][a].value === 0) { // if top most and bottom most elements are 0
+          } else if (board[l][a].value === 0 && board[k][a].value === 0) { // if fromp most and botfromm most elements are 0
             k ++
-          } else if (board[l][a].value === 0 && board[k][a].value !== 0) { // if top most element is 0 and bottom most element is not 0
+          } else if (board[l][a].value === 0 && board[k][a].value !== 0) { // if fromp most element is 0 and botfromm most element is not 0
 
-            this.slideAnimationsList.push({to: (k * 4 + a), from: (l * 4 + a)}) // add animation data
+            this.slideAnimationsList.push({from: (k * 4 + a), to: (l * 4 + a)}) // add animation data
 
             board[l][a].value = board[k][a].value + board[l][a].value
             board[k][a].value = 0
