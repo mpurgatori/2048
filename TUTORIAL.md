@@ -1,10 +1,6 @@
 # Build 2048 with Vue.js
 
-2048 is a popular game for a single player. The game has a 4 by 4 grid for tiles. Each **tile** can either be empty or has a **card** with value. As a player, you can control LEFT, RIGHT, UP and DOWN. As cards get merged, the numbers on the cards change as well. The goal is to get number on the card as high as possible. A traditional game looks like below:
-
-![example](/images/2048_example.gif)
-
-We tweaked some layout and our version looks like below:
+2048 is a popular game for a single player. The game has a 4 by 4 grid for tiles. Each **tile** can either be empty or has a **card** with value. As a player, you can move **left**, **right**, **up** and **down**. As cards get merged, the numbers on the cards change as well. The goal is to get number on the card as high as possible. Our final project looks like this:
 
 ![our_final_product]()
 
@@ -20,9 +16,15 @@ First, we need to set up a project scaffold to build a Vue project. We are going
   - **store**. __PLACEHOLDER__
   - **main.js**. __PLACEHOLDER__
 
-## Step 1. define components
+## Step 1. set up game board
 
-First we have a `Game` component that is in charge of a **board**. A **Board** has many **tiles**, and each **tile** has a **value** that defaults to 0. We can start by registering the component `game`:
+In this step we will:
+
+  1. create `game` component with `board`
+  2. create shadow board
+  3. create seeding function
+
+First we have a `game` component that is in charge of a **board**. A **Board** has many **tiles**, and each **tile** has a **value** that defaults to 0. We can start by registering the component `game`:
 
 **src/omponents/game.js**
 
@@ -37,18 +39,13 @@ First we have a `Game` component that is in charge of a **board**. A **Board** h
     template: html,
     data () {
       return {
-        board: [
-          [{value:0},{value:0},{value:0},{value:0}],
-          [{value:0},{value:0},{value:0},{value:0}],
-          [{value:0},{value:0},{value:0},{value:0}],
-          [{value:0},{value:0},{value:0},{value:0}],
-        ],
+        board: [],
       }
     },
   })
 }))()
 ```
-On the Vue component `game`, we have a data property `board` that holds a 4 by 4 grid, represented as arrays of arrays. Next we need to present the board with the number in the middle of each tile. We then modify the **template** specified in `html` (note that the CSS has already been defined inside `assets/`)
+On the Vue component `game`, we have a data property `board` that holds an array of **tiles**, each tile holds a default value of 0. Next we add a **shadow board** as the base layer of the board game inside our `html`.
 
 **src/omponents/game.js**
 
@@ -56,9 +53,9 @@ On the Vue component `game`, we have a data property `board` that holds a 4 by 4
 ((() => {
   const html = `
     <div class="game">
-      <div v-for="row in board" class="row">
-        <div class="tile">
-          {{ row.value }}
+      <div class="game-container">
+       <div class="board shadow-board">
+          <div v-for="n in board.length" :key="n" class="tile shadow-tile"></div>
         </div>
       </div>
     </div>
@@ -69,13 +66,9 @@ On the Vue component `game`, we have a data property `board` that holds a 4 by 4
 
 Now when you open `index.html`, it should look like this:
 
-![step_1_define_components](/images/step_1.png)
+![step_1_shodow_board](/images/step_1_shadow_board.png)
 
-## Step 2. start the game
-
-To start the game we need to randomly select 2 tiles and set the **value** of each tile to 2. Let's create a **seedTwo** method:
-
-**src/omponents/game.js**
+During the game, we need to find an empty tile and set the value of that tile to 2, so we write a `seedTwo()` function and put it under `methods` of `Game()` component.
 
 ```javascript
   Vue.component("game", {
@@ -103,36 +96,347 @@ To start the game we need to randomly select 2 tiles and set the **value** of ea
   ...
 ```
 
-How do we let the app know that we want to trigger this method when a game starts? Vue.js provides some useful [lifecycle methods](https://vuejs.org/v2/guide/instance.html#Lifecycle-Diagram), and we will call **seedTwo** after all the elements are ready, so we choose to put the method inside `mounted()`:
+## Step 2. define object models
+
+In this step we will:
+
+  1. create `Tile()` component
+  2. modify `Tile()` CSS class based on wether the tile is empty or not
+  3. create `GameMenu()` component
+
+A board can hold 16 tiles (4 by 4), and we add another component `tile` under `src/components/tile.js`. The **tile** components take a tile object as [a required props](https://vuejs.org/v2/guide/components.html#Props), which needs to include  `{value: X}` as part of the object.
+
+**src/omponents/tile.js**
 
 ```javascript
+((() => {
+  const html = `
+    <div class="tile">
+      {{ value }}
+    </div>
+  `
+
+  Vue.component("tile", {
+    template: html,
+    props: {
+      tile: {
+        type: Object,
+        required: true
+      },
+    },
+
+    computed: {
+      value() {
+        return this.tile.value
+      },
+    }
+  })
+}))()
+
+```
+
+Notice that in our final product, the style of each tile change as we change the a tile from being empty (value 0) to non-empty (value not 0). Inside the component, we construct computed properties based on the value, and later on we use the computed property to toggle the style by [class binding](https://vuejs.org/v2/guide/class-and-style.html):
+
+**src/omponents/tile.js**
+
+```javascript
+((() => {
+  const html = `
+    <div class="tile">
+      {{ displayingValue }}
+    </div>
+  `
+
+  Vue.component("tile", {
+    template: html,
+    props: {
+      tile: {
+        type: Object,
+        required: true
+      },
+    },
+
+    computed: {
+      value() {
+        return this.tile.value
+      },
+
+      displayingValue() {
+        if (this.value > 0) {
+          return this.value
+        }
+
+        return null
+      },
+
+      emptyTile() {
+        return this.displayingValue === null
+      },
+    }
+  })
+}))()
+
+```
+Given we have a **tile** component, we plug the `tile` back in the **game** component:
+
 **src/omponents/game.js**
 
 ```javascript
-  Vue.component("game", {
-    ...
+((() => {
+  const html = `
+    <div class="game">
+      <div class="game-container">
+        <tile v-for="tile in board" :tile="tile" :key="tile.id"></tile>
+        <div class="board shadow-board">
+          <div v-for="n in board.length" :key="n" class="tile shadow-tile"></div>
+        </div>
+      </div>
+    </div>
+  `
+  ...
+}))()
+```
 
-    mounted() {
-      this.setupBoard()
-    },
+Now that we have the computed property `emptyTile`, we can plug into our `html` and toggle class:
+
+**src/omponents/tile.js**
+
+```javascript
+((() => {
+  const html = `
+    <div class="tile" v-bind:class="{'tile-empty': emptyTile}">
+      {{ displayingValue }}
+    </div>
+  `
+
+  Vue.component("tile", {
+    ...
+  })
+}))()
+
+```
+
+Next we can define a `game-menu` to show current score, show the best score, and start a new game. Let's start with a plain scaffold:
+
+**src/omponents/game-menu.js**
+
+```javascript
+((() => {
+  const html = `
+    <div class="game-menu">
+      <div class="row">
+        <div class="title">2048</div>
+        <div class="scores space-right">
+          <div class="score">
+            <div class="score-title">SCORE</div>
+            <div class="score-value">0000</div>
+          </div>
+          <div class="score">
+            <div class="score-title">BEST</div>
+            <div class="score-value">0000</div>
+          </div>
+        </div>
+      </div>
+      <a class="button space-right">New Game</a>
+    </div>
+  `
+
+  Vue.component("game-menu", {
+    template: html,
+  })
+}))()
+```
+
+Let's wire up the "New Game" button! Because `game-menu` component is nested inside `game` component. We can consider `game-menu` as the child component for the parent component `game`. Vue has a nice paradigm for child-parent communication where a child component can **emit** events up to parent component and let the parent handle the event. This paradigm is called "data down, event up". You can read more about Vue events handling [here](https://vuejs.org/v2/guide/events.html).
+
+So let's register the events on `game-menu.js`
+
+**src/omponents/game-menu.js**
+
+```javascript
+((() => {
+  const html = `
+    <div class="game-menu">
+      ...
+      <a class="button space-right" @click="newGame()">New Game</a>
+    </div>
+  `
+
+  Vue.component("game-menu", {
+    template: html,
 
     methods: {
-      setupBoard() {
-        this.seedTwo()
-        this.seedTwo()
+      newGame() {
+        this.$emit("new-game")
       }
-
     }
   })
-
-  ...
+}))()
 ```
-We call the function twice because we want to initialize two tiles randomly. If you go to `index.html` in the browser, and refresh the page, you see two tiles initiated randomly everytime:
 
-![step_2](/images/step_2.gif)
+**this.$emit("new-game")** sends an event up to its parent `game`, and inside `game.js` we need to handle the event. When an event `new-game` is received, the `game` component will call **newGame()** method, which resets the board and seed two tiles by calling **seedTwo()** twice.
+
+```javascript
+((() => {
+  const html = `
+    <div class="game">
+      <game-menu @new-game="newGame()"></game-menu>
+      ...
+    </div>
+  `
+
+  Vue.component("game", {
+    template: html,
+    ...
+    methods: {
+      seedTwo() {
+        let getRandomItem = () => {
+          let randomIndex = Math.floor(Math.random() * this.board.length)
+
+          return this.board[randomIndex]
+        }
+
+        let randomItem = getRandomItem()
+
+        while (randomItem.value != 0) {
+          randomItem = getRandomItem()
+        }
+        
+
+        randomItem.value = 2
+      },
+
+      newGame() {
+        this.resetBoard()
+        this.seedTwo()
+        this.seedTwo()
+      },
+
+      resetBoard() {
+        this.board = Array.apply(null, { length: 16 })
+          .map(function (_, index) { 
+            return {
+              id: index,
+              value: 0
+            }
+          })
+      }
+    }
+  })
+}))()
+```
+
+## Step 3: Implment Merge and slide tiles
+
+In this step we will:
+
+  1. Using `moveRight()` as an example, understand how to merge and slide tiles algorithmically
+  2. Using `moveRight()` as an example, implement the merge and slide
+  3. Register controls in the `game` component using [Vue mixin](https://vuejs.org/v2/guide/mixins.html)
+
+We essentially have four different methods to implement `moveRight`, `moveLeft`, `moveUp` and `moveDown`. Once we implement one method, the rest of them follow the same pattern and thus easier to implement. Let's take `moveRight()` as an example to walk through.
+
+`moveRight()` essentially includes two steps: **merge** and **slide**. In merge step, we figure out the two tiles that need to combine into one; in sldie step, we figure out the future position of each tile. Because we are moving horizontally for `moveRight()`, the algorithm scan through each row and trigger **mergeRight** then **slideRight**. The animation below demonstrates how the algorithm of `moveRight()` works on one row:
+
+![step_3_merge_and_slide](/images/step_3_merge_and_slide.gif)
+
+The below is the code that implements the algorithm for `moveRight()`:
+
+```javasscript
 
 
+      moveRight() {
+        let board = _.cloneDeep(_.chunk(this.board, 4).slice())
+        for (var a = 0; a < board.length; a++) {
+          this.mergeRight(board, a)
+          this.slideRight(board, a)
+        }
+      },
 
+      mergeRight(board, a) {
+        let i = board.length - 2
+        let j = board.length - 1
+
+        // updated all the possible merge values
+        // think of i, j  pointers in the board
+        // if they become separate, the pointers will try from catch up
+        while (i >= 0) {
+          if (board[a][i].value === 0 && board[a][j].value === 0) { // if both elements are zero
+            j --
+            i --
+          } else if (board[a][i].value === board[a][j].value) { // if two elements have same value
+
+            this.mergeAnimationsList.push({from: (a * 4 + i), to: (a * 4 + j)})
+
+            board[a][j].value = board[a][i].value + board[a][j].value
+            board[a][i].value = 0
+            j--
+            i--
+          } else if (board[a][j].value === 0) { // if the right most has 0
+            j--
+            i--
+          } else if (board[a][i].value != 0 && board[a][j].value != 0 && (i + 1 == j)) { // if both are non zero and next from each other
+            j--
+            i--
+          } else if (board[a][i].value != 0 && board[a][j].value != 0) { // if both are non zero and not next from each other
+            j--
+          } else if (board[a][i].value === 0) { // if the left most element is zero
+            i--
+          }
+        }
+      },
+
+      slideRight(board, a) {
+        let k = board.length - 2
+        let l = board.length - 1
+        while (k >= 0) {
+          if (board[a][l].value !== 0) { // if right most element is 0
+            l --
+            k --
+          } else if (board[a][l].value !== 0 && board[a][k].value !== 0) { // if right most and left most elements are not 0
+            l --
+            k --
+          } else if (board[a][l].value === 0 && board[a][k].value === 0) { // if right most and left most elements are 0
+            k --
+          } else if (board[a][l].value === 0 && board[a][k].value !== 0) { // if right most element is 0 and left most element is not 0
+
+            this.slideAnimationsList.push({from: (a * 4 + k), to: (a * 4 + l)})
+
+            board[a][l].value = board[a][k].value + board[a][l].value
+            board[a][k].value = 0
+            l --
+            k --
+          }
+        }
+      },
+```
+
+After we implement `moveRight`, `moveLeft`, `moveUp` and `moveDown`. We can isolate all those methods in `src/mixins/control.js`, and then we can include the **control** as an mixin for `game` component. Now when a `game` is mounted, we register the controls:
+
+```javascript
+((() => {
+  const html = `
+    <div class="game">
+      <game-menu @new-game="newGame()"></game-menu>
+      <div class="game-container">
+        <transition-group name="tile" tag="div" class="board">
+          <tile v-for="tile in board" :tile="tile" :key="tile.id"></tile>
+        </transition-group>
+        <div class="board shadow-board">
+          <div v-for="n in board.length" :key="n" class="tile shadow-tile"></div>
+        </div>
+      </div>
+    </div>
+  `
+
+  Vue.component("game", {
+    template: html,
+    mixins: [window.app.mixins.control],
+    ...
+  })
+}))()
+
+```
 
 
 
