@@ -16,16 +16,9 @@
 
     watch: {
       value(newVal, oldVal) {
-        if (newVal > oldVal && this.$store.state.seeding) {
-          this.$el.style.opacity = 0
-          $(this.$el).velocity({scale: 1.1, opacity: 1}, {duration: 50, complete: () => {
-            $(this.$el).velocity({scale: 1}, {duration: 50, complete: () => {
-              this.$store.dispatch("setSeeding", false)
-            }})
-          }})
-        } else if (oldVal !== 0 && newVal > oldVal) {
+        if (newVal > oldVal) {
           setTimeout(() => {
-            $(this.$el).velocity({scale: 1.1}, {duration: 50, complete: () => {
+            $(this.$el).velocity({scale: 1.2}, {duration: 50, complete: () => {
               $(this.$el).velocity({scale: 1}, {duration: 50})
             }})
           }, 50)
