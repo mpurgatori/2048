@@ -7,6 +7,7 @@
         if (boardDidChange) {
           while (this.mergeAnimationsList.length > 0) {
             let animation = this.mergeAnimationsList.splice(0, 1)[0]
+            this.updateScore(animation)
             this.animateTiles(animation)
           }
           while (this.slideAnimationsList.length > 0) {
@@ -14,7 +15,6 @@
             this.animateTiles(animation)
           }
           setTimeout(() => {
-            this.$store.dispatch("setSeeding", true)
             this.seedTwo()
           }, 100)
         }
@@ -34,17 +34,39 @@
         this.board.splice(to, 1)
         this.board.splice(to, 0, a)
       },
+      updateScore(animation) {
+        let { from, to } = animation
 
-      moveRight() {
-        let board = _.cloneDeep(_.chunk(this.board, 4).slice())
-        for (var a = 0; a < board.length; a++) {
-          this.mergeRight(board, a)
-          this.slideRight(board, a)
-        }
-        this.animate()
+        let a = this.board[from]
+        let b = this.board[to]
+        let points = a.value + b.value
+
+        this.$store.dispatch("updateScore", points)
       },
 
-      mergeRight(board, a) {
+      getChangeLists(type) {
+        let changeLists = {}
+        if (type === "animate") {
+          changeLists.merge = this.mergeAnimationsList
+          changeLists.slide = this.slideAnimationsList
+        } else if (type === "gamestate") {
+          changeLists.merge = this.mergeGameStateList
+          changeLists.slide = this.slideGameStateList
+        }
+        return changeLists
+      },
+
+      moveRight(type = "animate") {
+        let changeLists = this.getChangeLists(type)
+
+        let board = _.cloneDeep(_.chunk(this.board, 4))
+        for (var a = 0; a < board.length; a++) {
+          this.mergeRight(board, a, changeLists)
+          this.slideRight(board, a, changeLists)
+        }
+      },
+
+      mergeRight(board, a, changeLists) {
         let i = board.length - 2
         let j = board.length - 1
 
@@ -57,7 +79,7 @@
             i --
           } else if (board[a][i].value === board[a][j].value) { // if two elements have same value
 
-            this.mergeAnimationsList.push({from: (a * 4 + i), to: (a * 4 + j)})
+            changeLists.merge.push({from: (a * 4 + i), to: (a * 4 + j)})
 
             board[a][j].value = board[a][i].value + board[a][j].value
             board[a][i].value = 0
@@ -77,7 +99,7 @@
         }
       },
 
-      slideRight(board, a) {
+      slideRight(board, a, changeLists) {
         let k = board.length - 2
         let l = board.length - 1
         while (k >= 0) {
@@ -91,7 +113,7 @@
             k --
           } else if (board[a][l].value === 0 && board[a][k].value !== 0) { // if right most element is 0 and left most element is not 0
 
-            this.slideAnimationsList.push({from: (a * 4 + k), to: (a * 4 + l)})
+            changeLists.slide.push({from: (a * 4 + k), to: (a * 4 + l)})
 
             board[a][l].value = board[a][k].value + board[a][l].value
             board[a][k].value = 0
@@ -101,16 +123,17 @@
         }
       },
 
-      moveLeft() {
-        let board = _.cloneDeep(_.chunk(this.board, 4).slice())
+      moveLeft(type = "animate") {
+        let changeLists = this.getChangeLists(type)
+
+        let board = _.cloneDeep(_.chunk(this.board, 4))
         for (var a = 0; a < board.length; a++) {
-          this.mergeLeft(board, a)
-          this.slideLeft(board, a)
+          this.mergeLeft(board, a, changeLists)
+          this.slideLeft(board, a, changeLists)
         }
-        this.animate()
       },
 
-      mergeLeft(board, a) {
+      mergeLeft(board, a, changeLists) {
         let i = 1
         let j = 0
 
@@ -120,7 +143,7 @@
             i++
           } else if (board[a][i].value === board[a][j].value) { // if two elements have same value
 
-            this.mergeAnimationsList.push({from: (a * 4 + i), to: (a * 4 + j)})
+            changeLists.merge.push({from: (a * 4 + i), to: (a * 4 + j)})
 
             board[a][j].value = board[a][i].value + board[a][j].value
             board[a][i].value = 0
@@ -140,7 +163,7 @@
         }
       },
 
-      slideLeft(board, a) {
+      slideLeft(board, a, changeLists) {
         let k = 1
         let l = 0
         while (k < board.length) {
@@ -154,7 +177,7 @@
             k ++
           } else if (board[a][l].value === 0 && board[a][k].value !== 0) { // if left most element is 0 and right most element is not 0
 
-            this.slideAnimationsList.push({from: (a * 4 + k), to: (a * 4 + l)})
+            changeLists.slide.push({from: (a * 4 + k), to: (a * 4 + l)})
 
             board[a][l].value = board[a][k].value + board[a][l].value
             board[a][k].value = 0
@@ -164,16 +187,17 @@
         }
       },
 
-      moveDown() {
-        let board = _.cloneDeep(_.chunk(this.board, 4).slice())
+      moveDown(type = "animate") {
+        let changeLists = this.getChangeLists(type)
+
+        let board = _.cloneDeep(_.chunk(this.board, 4))
         for (var a = 0; a < board.length; a++) {
-          this.mergeDown(board, a)
-          this.slideDown(board, a)
+          this.mergeDown(board, a, changeLists)
+          this.slideDown(board, a, changeLists)
         }
-        this.animate()
       },
 
-      mergeDown(board, a) {
+      mergeDown(board, a, changeLists) {
         let i = board.length - 2
         let j = board.length - 1
 
@@ -183,7 +207,7 @@
             i--
           } else if (board[i][a].value === board[j][a].value) {
 
-            this.mergeAnimationsList.push({from: (i * 4 + a), to: (j * 4 + a)})
+            changeLists.merge.push({from: (i * 4 + a), to: (j * 4 + a)})
 
             board[j][a].value = board[i][a].value + board[j][a].value
             board[i][a].value = 0
@@ -203,7 +227,7 @@
         }
       },
 
-      slideDown(board, a) {
+      slideDown(board, a, changeLists) {
         let k = board.length - 2
         let l = board.length - 1
         while (k >= 0) {
@@ -217,7 +241,7 @@
             k --
           } else if (board[l][a].value === 0 && board[k][a].value !== 0) { // if botfromm most element is 0 and fromp most element is not 0
 
-            this.slideAnimationsList.push({from: (k * 4 + a), to: (l * 4 + a)})
+            changeLists.slide.push({from: (k * 4 + a), to: (l * 4 + a)})
 
             board[l][a].value = board[k][a].value + board[l][a].value
             board[k][a].value = 0
@@ -227,16 +251,17 @@
         }
       },
 
-      moveUp() {
-        let board = _.cloneDeep(_.chunk(this.board, 4).slice())
+      moveUp(type = "animate") {
+        let changeLists = this.getChangeLists(type)
+
+        let board = _.cloneDeep(_.chunk(this.board, 4))
         for (var a = 0; a < board.length; a++) {
-          this.mergeUp(board, a)
-          this.slideUp(board, a)
+          this.mergeUp(board, a, changeLists)
+          this.slideUp(board, a, changeLists)
         }
-        this.animate()
       },
 
-      mergeUp(board, a) {
+      mergeUp(board, a, changeLists) {
         let i = 1
         let j = 0
         while (i < board.length) {
@@ -245,7 +270,7 @@
             i++
           } else if (board[i][a].value === board[j][a].value) {
 
-            this.mergeAnimationsList.push({from: (i * 4 + a), to: (j * 4 + a)}) // add animation data
+            changeLists.merge.push({from: (i * 4 + a), to: (j * 4 + a)}) // add animation data
 
             board[j][a].value = board[i][a].value + board[j][a].value
             board[i][a].value = 0
@@ -265,7 +290,7 @@
         }
       },
 
-      slideUp(board, a) {
+      slideUp(board, a, changeLists) {
         let k = 1
         let l = 0
         while (k < board.length) {
@@ -279,7 +304,7 @@
             k ++
           } else if (board[l][a].value === 0 && board[k][a].value !== 0) { // if fromp most element is 0 and botfromm most element is not 0
 
-            this.slideAnimationsList.push({from: (k * 4 + a), to: (l * 4 + a)}) // add animation data
+            changeLists.slide.push({from: (k * 4 + a), to: (l * 4 + a)}) // add animation data
 
             board[l][a].value = board[k][a].value + board[l][a].value
             board[k][a].value = 0
@@ -290,23 +315,25 @@
       },
 
       registerControl() {
-        const self = this
-        document.addEventListener("keydown", function(event) {
-          if (event.which === 39) {
-            // right
-            self.moveRight()
-          } else if (event.which === 37) {
-            // left
-            self.moveLeft()
-          } else if (event.which === 38) {
-            // up
-            self.moveUp()
-          } else if (event.which === 40) {
-            // down
-            self.moveDown()
-          } else {
-            return // do nothing
-          }
+        const validKeyCodes = [39, 37, 38, 40]
+        document.addEventListener("keydown", (event) => {
+          let key = event.which
+          if (_.includes(validKeyCodes, key)) {
+            if (key === 39) {
+              // right
+              this.moveRight()
+            } else if (key === 37) {
+              // left
+              this.moveLeft()
+            } else if (key === 38) {
+              // up
+              this.moveUp()
+            } else if (key === 40) {
+              // down
+              this.moveDown()
+            }
+            this.animate()
+          } else { return }
         })
       }
     }
