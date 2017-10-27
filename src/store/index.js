@@ -4,20 +4,25 @@
 
   const Store = new Vuex.Store({
     state: {
-      seeding: false,
+      score: 0,
     },
 
     mutations: {
-      setSeeding(state, status) {
-        state.seeding = status
+      updateScore(state, score) {
+        state.score += score
       },
+      resetScore(state) {
+        state.score = 0
+      }
     },
 
     actions: {
-      setSeeding(context, status) {
-        context.commit("setSeeding", status)
+      updateScore(context, score) {
+        context.commit("updateScore", score)
       },
-
+      resetScore(context) {
+        context.commit("resetScore")
+      }
     },
   })
   window.store = Store

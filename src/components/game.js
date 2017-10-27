@@ -1,7 +1,7 @@
 ((() => {
   const html = `
     <div class="game">
-      <game-menu @new-game="newGame()"></game-menu>
+      <game-menu @new-game="newGame()" :gameOver="gameOver"></game-menu>
       <div class="game-container">
         <transition-group name="tile" tag="div" class="board">
           <tile v-for="tile in board" :tile="tile" :key="tile.id"></tile>
@@ -20,15 +20,44 @@
       return {
         board: [],
         mergeAnimationsList: [],
-        slideAnimationsList: []
+        slideAnimationsList: [],
+        mergeGameStateList: [],
+        slideGameStateList: [],
+        gameOver: false,
       }
+    },
+
+    watch: {
+      allTilesFull(boardFull, _) {
+        if (boardFull) {
+          this.checkGameState()
+        }
+      },
     },
 
     mounted() {
       this.setupBoard()
     },
 
+    computed: {
+      allTilesFull() {
+        return !this.board.filter(tile => tile.value === 0).length > 0
+      },
+    },
+
     methods: {
+
+      checkGameState() {
+        this.moveUp("gamestate")
+        this.moveDown("gamestate")
+        this.moveLeft("gamestate")
+        this.moveRight("gamestate")
+        if (!this.mergeGameStateList.length > 0 || !this.slideGameStateList.length > 0) {
+          this.gameOver = true
+        }
+        this.mergeGameStateList = []
+        this.slideGameStateList = []
+      },
 
       setupBoard() {
         this.newGame()
@@ -36,6 +65,8 @@
       },
 
       seedTwo() {
+        if (this.allTilesFull) { return }
+
         let getRandomItem = () => {
           let randomIndex = Math.floor(Math.random() * this.board.length)
 
@@ -47,15 +78,16 @@
         while (randomItem.value != 0) {
           randomItem = getRandomItem()
         }
-        
 
         randomItem.value = 2
       },
 
       newGame() {
         this.resetBoard()
+        this.resetScore()
         this.seedTwo()
         this.seedTwo()
+        this.gameOver = false
       },
 
       resetBoard() {
@@ -66,6 +98,10 @@
               value: 0
             }
           })
+      },
+
+      resetScore() {
+        this.$store.dispatch("resetScore")
       }
     }
   })
