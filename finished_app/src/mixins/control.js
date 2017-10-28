@@ -1,5 +1,14 @@
 ((() => {
   window.app.mixins.control = {
+    data() {
+      return {
+        mergeAnimationsList: [],
+        slideAnimationsList: [],
+        mergeGameStateList: [],
+        slideGameStateList: [],
+      }
+    },
+
     methods: {
       animate() {
         let boardDidChange = this.mergeAnimationsList.length > 0 || this.slideAnimationsList.length > 0
