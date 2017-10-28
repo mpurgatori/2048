@@ -4,25 +4,15 @@
 
   const Store = new Vuex.Store({
     state: {
-      score: 0,
+      // Vuex state
     },
 
     mutations: {
-      updateScore(state, score) {
-        state.score += score
-      },
-      resetScore(state) {
-        state.score = 0
-      }
+      // Vuex mutations
     },
 
     actions: {
-      updateScore(context, score) {
-        context.commit("updateScore", score)
-      },
-      resetScore(context) {
-        context.commit("resetScore")
-      }
+      // Vuex actions
     },
   })
   window.store = Store
