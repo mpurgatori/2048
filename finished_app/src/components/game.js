@@ -19,10 +19,6 @@
     data () {
       return {
         board: [],
-        mergeAnimationsList: [],
-        slideAnimationsList: [],
-        mergeGameStateList: [],
-        slideGameStateList: [],
         gameOver: false,
       }
     },
