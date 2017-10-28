@@ -4,7 +4,7 @@
                  Implement style binding for css style 'backgroundColor' from backgroundColor computed property value -->
     <!-- read: https://v1.vuejs.org/guide/class-and-style.html#Binding-HTML-Classes
                https://v1.vuejs.org/guide/class-and-style.html#Binding-Inline-Styles -->
-    <div class="tile" v-bind:style="{backgroundColor: backgroundColor}" v-bind:class="{'tile-empty': emptyTile}">
+    <div class="tile">
       {{ displayingValue }}
     </div>
   `
@@ -51,16 +51,6 @@
       //      }})
       //     }, 50)
       // read: https://vuejs.org/v2/guide/computed.html#Watchers
-      value(newVal, oldVal) {
-        if (newVal > oldVal) {
-          setTimeout(() => {
-            Velocity(this.$el, {scale: 1.2}, {duration: 50, complete: () => {
-              Velocity(this.$el, {scale: 1}, {duration: 50})
-            }})
-          }, 50)
-        }
-      }
-
     },
 
     computed: {

@@ -18,16 +18,19 @@
         </div>
       </div>
       <a class="button space-right" @click="newGame()">New Game</a>
-        <!-- TODO 4: Add transition-group for board -->
-        <!-- read: https://vuejs.org/v2/guide/transitions.html#Transitioning-Single-Elements-Components -->
-        <!-- implement the css for this at the bottom of the 'styles.css'
-             you will see a comment there -->
-      <transition name="fade">
-        <div v-if="gameOver" class="modal">
-          <h1>Game Over!</h1>
-          <a class="button button-black" @click="newGame()">Try again</a>
-        </div>
-      </transition>
+      <!-- TODO 4: Add game over modal and transition -->
+      <!-- read: https://vuejs.org/v2/guide/transitions.html#Transitioning-Single-Elements-Components -->
+      <!-- read: https://vuejs.org/v2/guide/conditional.html#v-if -->
+      <!-- Use this markup for the game over modal
+      <!-- ------------------------------------------------------------------------
+            <div class="modal">
+              <h1>Game Over!</h1>
+              <a class="button button-black" @click="newGame()">Try again</a>
+            </div>
+       ------------------------------------------------------------------------- -->
+      <!-- implement the css for this at the bottom of the 'styles.css'
+           you will see a comment there -->
+      <!-- YOUR MARKUP HERE -->
     </div>
   `
 
@@ -49,6 +52,7 @@
     },
 
     watch: {
+      // EXTRA: here is the implementation for the animated score
       // read: https://vuejs.org/v2/guide/transitioning-state.html#Animating-State-with-Watchers
       score(newValue, oldValue) {
         const self = this

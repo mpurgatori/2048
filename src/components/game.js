@@ -7,15 +7,9 @@
         <!-- read: https://vuejs.org/v2/guide/transitions.html#List-Transitions -->
         <!-- implement the css for this at the bottom of the 'styles.css'
              you will see a comment there -->
-        <!-- FLIP - First (initial state) 
-                    Last (final state) 
-                    Inverted (what has changed from first to last. 
-                      From final state, apply css to move item back to first i.e. ‘invert') 
-                    Play (switch on transitions for css properties you want to animate, 
-                      remove inverted styling) -->
-        <transition-group name="tile" tag="div" class="board">
+        <div tag="div" class="board">
           <tile v-for="tile in board" :tile="tile" :key="tile.id"></tile>
-        </transition-group>
+        </div>
         <div class="board shadow-board">
           <div v-for="n in board.length" :key="n" class="tile shadow-tile"></div>
         </div>
