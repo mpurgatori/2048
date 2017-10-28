@@ -1,15 +1,21 @@
 ((() => {
-
-  // TODO 2: register event handle
   const html = `
     <div class="game">
-      <!-- TODO 2: register event handler for new-game() event -->
-      <!-- read: https://vuejs.org/v2/guide/components.html#Using-v-on-with-Custom-Events -->
-      <game-menu @new-game="newGame()"></game-menu>
+      <game-menu @new-game="newGame()" :gameOver="gameOver"></game-menu>
       <div class="game-container">
-        <div class="board">
+        <!-- TODO 2: Add transition-group for board -->
+        <!-- read: https://vuejs.org/v2/guide/transitions.html#List-Transitions -->
+        <!-- implement the css for this at the bottom of the 'styles.css'
+             you will see a comment there -->
+        <!-- FLIP - First (initial state) 
+                    Last (final state) 
+                    Inverted (what has changed from first to last. 
+                      From final state, apply css to move item back to first i.e. ‘invert') 
+                    Play (switch on transitions for css properties you want to animate, 
+                      remove inverted styling) -->
+        <transition-group name="tile" tag="div" class="board">
           <tile v-for="tile in board" :tile="tile" :key="tile.id"></tile>
-        </div>
+        </transition-group>
         <div class="board shadow-board">
           <div v-for="n in board.length" :key="n" class="tile shadow-tile"></div>
         </div>
@@ -19,28 +25,54 @@
 
   Vue.component("game", {
     template: html,
-    // TODO 1: add mixins to Vue components
-    // read: https://vuejs.org/v2/guide/mixins.html
     mixins: [window.app.mixins.control],
     data () {
       return {
         board: [],
+        gameOver: false,
       }
+    },
+
+    watch: {
+      allTilesFull(boardFull, _) {
+        if (boardFull) {
+          this.checkGameState()
+        }
+      },
     },
 
     mounted() {
       this.setupBoard()
     },
 
+    computed: {
+      allTilesFull() {
+        return !this.board.filter(tile => tile.value === 0).length > 0
+      },
+    },
+
     methods: {
+
+      checkGameState() {
+        this.moveUp("gamestate")
+        this.moveDown("gamestate")
+        this.moveLeft("gamestate")
+        this.moveRight("gamestate")
+        if (!this.mergeGameStateList.length > 0 || !this.slideGameStateList.length > 0) {
+          this.gameOver = true
+        }
+        this.mergeGameStateList = []
+        this.slideGameStateList = []
+      },
 
       setupBoard() {
         this.newGame()
-        // TODO 2: add mixins to Vue components
         this.registerControl()
       },
 
       seedTwo() {
+        if (this.allTilesFull) { return }
+
         let getRandomItem = () => {
           let randomIndex = Math.floor(Math.random() * this.board.length)
 
@@ -59,8 +91,10 @@
 
       newGame() {
         this.resetBoard()
+        this.resetScore()
         this.seedTwo()
         this.seedTwo()
+        this.gameOver = false
       },
 
       resetBoard() {
@@ -72,6 +106,10 @@
             }
           })
       },
+
+      resetScore() {
+        this.$store.dispatch("resetScore")
+      }
     }
   })
 }))()
