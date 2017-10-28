@@ -1,13 +1,15 @@
 ((() => {
+
+  // TODO 2: register event handle
   const html = `
     <div class="game">
+      <!-- TODO 2: register event handler for new-game() event -->
+      <!-- read: https://vuejs.org/v2/guide/components.html#Using-v-on-with-Custom-Events -->
+      <game-menu @new-game="newGame()"></game-menu>
       <div class="game-container">
-        <!-- TODO 5 add board with v-for binding -->
-        <!-- read: https://vuejs.org/v2/guide/list.html#Mapping-an-Array-to-Elements-with-v-for -->
         <div class="board">
           <tile v-for="tile in board" :tile="tile" :key="tile.id"></tile>
         </div>
-        <!-- EXTRA add shadow board for UX-->
         <div class="board shadow-board">
           <div v-for="n in board.length" :key="n" class="tile shadow-tile"></div>
         </div>
@@ -18,16 +20,12 @@
   Vue.component("game", {
     template: html,
     data () {
-      // TODO 1: 
-      // https://vuejs.org/v2/guide/components.html#data-Must-Be-a-Function
       return {
         board: [],
       }
     },
 
     mounted() {
-      // TODO 3: call the method to setup board
-      // read: https://vuejs.org/v2/guide/instance.html#Lifecycle-Diagram
       this.setupBoard()
     },
 
@@ -50,8 +48,6 @@
           randomItem = getRandomItem()
         }
 
-        // TODO 2: set value of the randomItem to 2
-        // read: https://vuejs.org/v2/guide/events.html#Methods-in-Inline-Handlers
         randomItem.value = 2
 
       },
