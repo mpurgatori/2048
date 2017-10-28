@@ -19,8 +19,7 @@
 
   Vue.component("game", {
     template: html,
-    // TODO 1: add mixins to Vue components
-    // read: https://vuejs.org/v2/guide/mixins.html
+    mixins: [window.app.mixins.control],    
     data () {
       return {
         board: [],
@@ -35,6 +34,7 @@
 
       setupBoard() {
         this.newGame()
+        this.registerControl()
         // TODO 2: add mixins to Vue components
       },
 
