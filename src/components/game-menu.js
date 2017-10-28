@@ -17,7 +17,7 @@
 
       <!-- TODO 1: register click event to call newGame() -->
       <!-- read: https://vuejs.org/v2/guide/events.html#Methods-in-Inline-Handlers -->
-      <a class="button space-right" @click="newGame()">New Game</a>
+      <a class="button space-right">New Game</a>
     </div>
   `
 
@@ -28,7 +28,6 @@
       newGame() {
         // TODO 2: emit custom event
         // https://vuejs.org/v2/guide/components.html#Using-v-on-with-Custom-Event
-        this.$emit("new-game")
       }
     }
   })
