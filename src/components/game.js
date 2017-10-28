@@ -6,7 +6,9 @@
         <!-- read: https://vuejs.org/v2/guide/list.html#Mapping-an-Array-to-Elements-with-v-for -->
 
         <!-- EXTRA add shadow board for UX-->
-
+        <div class='board'>
+          <tile v-for="item in board" :tileData="item" :key="item.id"></tile>
+        </div>
       </div>
     </div>
   `
@@ -14,17 +16,16 @@
   Vue.component("game", {
     template: html,
     data () {
-      // TODO 1: 
-      // https://vuejs.org/v2/guide/components.html#data-Must-Be-a-Function
+      return {
+        board: []
+      }
     },
 
     mounted() {
-      // TODO 3: call the method to setup board
-      // read: https://vuejs.org/v2/guide/instance.html#Lifecycle-Diagram
+      this.setupBoard()
     },
 
     methods: {
-
       setupBoard() {
         this.newGame()
       },
@@ -42,8 +43,7 @@
           randomItem = getRandomItem()
         }
 
-        // TODO 2: set value of the randomItem to 2
-        // read: https://vuejs.org/v2/guide/events.html#Methods-in-Inline-Handlers
+        randomItem.value = 2 
       },
 
       newGame() {
