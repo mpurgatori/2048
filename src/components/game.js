@@ -98,7 +98,8 @@
       },
 
       resetScore() {
-        this.$store.dispatch("resetScore")
+        // TODO 1: add dispatch call to store to resetScore
+        // read: https://vuex.vuejs.org/en/actions.html
       }
     }
   })

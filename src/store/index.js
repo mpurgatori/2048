@@ -6,7 +6,6 @@
     state: {
       // TODO 1: add score key value pairing to state object
       // read: https://vuex.vuejs.org/en/state.html
-      score: 0,
     },
 
     mutations: {
@@ -15,9 +14,6 @@
       },
       // TODO 1: implement resetScore mutation
       // read: https://vuex.vuejs.org/en/mutations.html
-      resetScore(state) {
-        state.score = 0
-      }
     },
 
     actions: {
@@ -26,9 +22,6 @@
       },
       // TODO 1: implement resetScore action
       // read: https://vuex.vuejs.org/en/actions.html
-      resetScore(context) {
-        context.commit("resetScore")
-      }
     },
   })
   window.store = Store
