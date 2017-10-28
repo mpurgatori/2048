@@ -190,10 +190,6 @@ dark-khaki:
   background-color: initial;
 }
 
-.tile-move {
-  transition: transform .09s ease;
-}
-
 .shadow-board {
   position: absolute;
   height: 368px;
@@ -213,16 +209,6 @@ dark-khaki:
 .points-item {
   display: inline-block;
 }
-.points-enter-active, .points-leave-active {
-  transition: all 100ms;
-}
-.points-leave-to {
-  opacity: 0;
-  transform: translateY(-30px);
-}
-.points-enter {
-  transform: translateY(30px);
-}
 
 .modal {
   position: fixed;
@@ -240,6 +226,25 @@ dark-khaki:
   z-index: 99999;
 }
 
+
+
+/* ------------------------------------- */
+/* ------------------------------------- */
+/* ------------------------------------- */
+/* ------------ TRANSITIONS ------------ */
+/* ------------------------------------- */
+/* ----------------|||||---------------- */
+/* ----------------vvvvv---------------- */
+/* ------------------------------------- */
+
+/* TODO 2: Add tile-move css for transition-group */
+/* read: https://vuejs.org/v2/guide/transitions.html#List-Transitions */
+.tile-move {
+  transition: transform .09s ease;
+}
+
+/* TODO 4: Add fade css for fade transition */
+/* read: https://vuejs.org/v2/guide/transitions.html#Transitioning-Single-Elements-Components */
 .fade-enter-active {
   transition: opacity 2s
 }
@@ -248,4 +253,15 @@ dark-khaki:
 }
 .fade-enter, .fade-leave-to {
   opacity: 0
+}
+
+.points-enter-active, .points-leave-active {
+  transition: all 100ms;
+}
+.points-leave-to {
+  opacity: 0;
+  transform: translateY(-30px);
+}
+.points-enter {
+  transform: translateY(30px);
 }
