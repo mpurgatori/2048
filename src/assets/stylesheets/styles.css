@@ -237,14 +237,10 @@ dark-khaki:
 /* ----------------vvvvv---------------- */
 /* ------------------------------------- */
 
-/* TODO 2: Add tile-move css for transition-group */
-/* read: https://vuejs.org/v2/guide/transitions.html#List-Transitions */
 .tile-move {
   transition: transform .09s ease;
 }
 
-/* TODO 4: Add fade css for fade transition */
-/* read: https://vuejs.org/v2/guide/transitions.html#Transitioning-Single-Elements-Components */
 .fade-enter-active {
   transition: opacity 2s
 }
