@@ -3,16 +3,6 @@
     <div class="game">
       <game-menu @new-game="newGame()" :gameOver="gameOver"></game-menu>
       <div class="game-container">
-        <!-- TODO 2: Add transition-group for board -->
-        <!-- read: https://vuejs.org/v2/guide/transitions.html#List-Transitions -->
-        <!-- implement the css for this at the bottom of the 'styles.css'
-             you will see a comment there -->
-        <!-- FLIP - First (initial state) 
-                    Last (final state) 
-                    Inverted (what has changed from first to last. 
-                      From final state, apply css to move item back to first i.e. ‘invert') 
-                    Play (switch on transitions for css properties you want to animate, 
-                      remove inverted styling) -->
         <transition-group name="tile" tag="div" class="board">
           <tile v-for="tile in board" :tile="tile" :key="tile.id"></tile>
         </transition-group>
